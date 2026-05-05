@@ -5,17 +5,14 @@ from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 import sqlite3
 
+app = Flask(__name__)
 def get_db_connection():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     return conn
-    
 @app.route("/")
 def home():
     return "API online "
-
-
-app = Flask(__name__)
 app.config["SECRET_KEY"] = "nutriplanner"
 app.secret_key = "senhasecreta"
 # Configuração do email
