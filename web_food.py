@@ -1,6 +1,3 @@
-import os
-
-
 from flask import Flask, request, render_template, redirect, url_for, session
 from flask_mail import Mail, Message
 import mysql.connector
@@ -378,7 +375,7 @@ def planner():
     )
 """
 if __name__ == "__main__":
-    app.run(debug=True)
+    import os
     PORT = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=PORT)
 
