@@ -1,20 +1,16 @@
 from flask import Flask, request, render_template, redirect, url_for, session
 from flask_mail import Mail, Message
-import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+import sqlite3
+
+def get_db_connection():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
-
-conn = mysql.connector.connect(
-    host = "localhost",
-    user = "root",
-    password = "Batata2028",
-    database = "nutriplanner"
-)
-
-cursor = conn.cursor()
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "nutriplanner"
@@ -41,6 +37,8 @@ meal_translations = {
 
 @app.route("/login", methods=["GET","POST"])
 def login():
+    conn = get_db_connection()
+    cursor = conn.cursor()
     if request.method == "GET":
         return render_template("login.html")
     
@@ -50,7 +48,7 @@ def login():
     print("Email recebido:", email)
     print("Senha recebido:", password)
 
-    cursor.execute("SELECT id, pass_hash FROM user_login WHERE email = %s", (email,))
+    cursor.execute("SELECT id, pass_hash FROM user_login WHERE email = ?", (email,))
     row = cursor.fetchone()
     if not row:
         return render_template("login.html", login_error=True)
@@ -61,11 +59,13 @@ def login():
         return render_template("login.html", login_error = True)
     
     session["user_id"] = user_id
-    
+    conn.close()
     return redirect(url_for("perfil", user_id=user_id))
 
 @app.route("/register", methods=["GET","POST"])
 def register():
+    conn = get_db_connection()
+    cursor = conn.cursor()
     if request.method == "GET":
         return render_template("register.html")
 
@@ -81,11 +81,11 @@ def register():
     
     pass_hash = generate_password_hash(password)
 
-    cursor.execute("INSERT INTO user_login (email, pass_hash) VALUES (%s, %s)", (email, pass_hash))
+    cursor.execute("INSERT INTO user_login (email, pass_hash) VALUES (?, ?)", (email, pass_hash))
     user_login_id = cursor.lastrowid
 
     session["user_id"] = user_login_id
-
+    conn.close()
     return redirect(url_for("perfil"))
 
 def to_int_or_none(value):
@@ -93,11 +93,13 @@ def to_int_or_none(value):
         return None
     return float(value)
 
-@app.route("/perfil>", methods= ["GET", "POST"])
+@app.route("/perfil", methods= ["GET", "POST"])
 def perfil():
+    conn = get_db_connection()
+    cursor = conn.cursor()
     user_id = session.get("user_id")
 
-    cursor.execute("SELECT email FROM user_login WHERE id = %s",(user_id,))
+    cursor.execute("SELECT email FROM user_login WHERE id = ?",(user_id,))
     row = cursor.fetchone()
     gmail = row[0] 
 
@@ -107,16 +109,16 @@ def perfil():
         cursor.execute("SELECT name, birthday, height, weight, gender,goal_id, goal_pace_id, " \
         "exercise_id, principal_meal_id,eats_sweet_daily, vegetable, legumes "\
         "FROM user_profile "\
-        "WHERE user_id = %s ", (user_id,))
+        "WHERE user_id = ? ", (user_id,))
 
         profile_row = cursor.fetchone()
                 
         if profile_row:
 
-            cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
+            cursor.execute("SELECT id FROM user_profile WHERE user_id = ?", (user_id,))
             user_profile_id = cursor.fetchone()[0]
 
-            cursor.execute("SELECT meal_id FROM user_profile_meal WHERE profile_id = %s ", (user_profile_id,))
+            cursor.execute("SELECT meal_id FROM user_profile_meal WHERE profile_id = ? ", (user_profile_id,))
 
             meal_row = cursor.fetchall()
             meal_ids= [str (row[0]) for row in meal_row]
@@ -163,7 +165,7 @@ def perfil():
             )
     
     if request.method == "POST":
-        cursor.execute("SELECT user_id FROM user_profile WHERE user_id = %s", (user_id,))
+        cursor.execute("SELECT user_id FROM user_profile WHERE user_id = ?", (user_id,))
         row = cursor.fetchone()
 
         name = request.form.get("name")
@@ -186,17 +188,17 @@ def perfil():
                 "(user_id, name, birthday, height, weight, gender, " \
                 "goal_id, goal_pace_id, exercise_id, principal_meal_id, eats_sweet_daily, vegetable, legumes) " \
             "VALUES " \
-                "(%s, %s, %s, %s, %s,%s, %s, %s, %s,%s, %s, %s,%s)", 
+                "(?, ?, ?, ?, ?,?, ?, ?, ?,?, ?, ?,?)", 
             (user_id, name, birthday, height, weight, gender,goal_id, 
             goal_pace_id, exercise_id, principal_meal_id, eats_sweet_daily, vegetable, legumes))
             
             conn.commit()
 
-            cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
+            cursor.execute("SELECT id FROM user_profile WHERE user_id = ?", (user_id,))
             user_profile_id = cursor.fetchone()[0]
 
             for meal in meals:
-                cursor.execute("INSERT INTO user_profile_meal (profile_id, meal_id) VALUES (%s, %s)", 
+                cursor.execute("INSERT INTO user_profile_meal (profile_id, meal_id) VALUES (?, ?)", 
                 (user_profile_id, meal))
             
             conn.commit()
@@ -204,41 +206,43 @@ def perfil():
         else: 
             cursor.execute("" \
             "update user_profile "
-            " set name = %s, " \
-                "birthday = %s, " \
-                "height = %s, " \
-                "weight = %s, " \
-                "gender = %s, " \
-                "goal_id = %s, " \
-                "goal_pace_id = %s, " \
-                "exercise_id = %s, " \
-                "principal_meal_id = %s, " \
-                "eats_sweet_daily = %s, " \
-                "vegetable = %s," \
-                "legumes = %s " \
-            "where user_id = %s ", 
+            " set name = ?, " \
+                "birthday = ?, " \
+                "height = ?, " \
+                "weight = ?, " \
+                "gender = ?, " \
+                "goal_id = ?, " \
+                "goal_pace_id = ?, " \
+                "exercise_id = ?, " \
+                "principal_meal_id = ?, " \
+                "eats_sweet_daily = ?, " \
+                "vegetable = ?," \
+                "legumes = ? " \
+            "where user_id = ? ", 
             (name, birthday, height, weight, gender,goal_id, 
             goal_pace_id, exercise_id, principal_meal_id, eats_sweet_daily, vegetable,legumes, user_id))
             
             conn.commit()
 
-            cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
+            cursor.execute("SELECT id FROM user_profile WHERE user_id = ?", (user_id,))
             user_profile_id = cursor.fetchone()[0]
 
-            cursor.execute("delete from user_profile_meal where profile_id = %s", (user_profile_id,))
+            cursor.execute("delete from user_profile_meal where profile_id = ?", (user_profile_id,))
 
             for meal in meals:
-                cursor.execute("insert into user_profile_meal (profile_id, meal_id ) values ( %s, %s)", 
+                cursor.execute("insert into user_profile_meal (profile_id, meal_id ) values ( ?, ?)", 
                 (user_profile_id, meal))
             conn.commit()
-
+    conn.close()
     return redirect(url_for("perfil", saved=1))
     
 @app.route("/change_login", methods=["GET", "POST"])
 def change_login():
+    conn = get_db_connection()
+    cursor = conn.cursor() 
     user_id = session.get("user_id")
 
-    cursor.execute("SELECT email FROM user_login WHERE id = %s",(user_id,))
+    cursor.execute("SELECT email FROM user_login WHERE id = ?",(user_id,))
     primary_email = cursor.fetchone()[0] 
 
     if request.method == "GET":
@@ -250,7 +254,7 @@ def change_login():
     
     if request.method == "POST":
 
-        cursor.execute("select pass_hash from user_login where id = %s", (user_id,))
+        cursor.execute("select pass_hash from user_login where id = ?", (user_id,))
         pass_hash = cursor.fetchone()[0]
 
         if old_email != primary_email:
@@ -259,10 +263,10 @@ def change_login():
         if not check_password_hash (pass_hash, password):
             return redirect( url_for('change_login', password_error = True))
         
-        cursor.execute("update user_login set email = %s where id = %s", (new_gmail, user_id,))
+        cursor.execute("update user_login set email = ? where id = ?", (new_gmail, user_id,))
         conn.commit()
         
-    
+    conn.close()
     return redirect(url_for("change_login", user_id=user_id, saved=1))
         
 serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
@@ -286,23 +290,27 @@ def send_email(email, token):
 
 @app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
+    conn = get_db_connection()
+    cursor = conn.cursor()
     if request.method == "GET":
         return render_template("forgot_password.html")
     
     email = request.form.get("gmail")
 
-    cursor.execute("SELECT id FROM user_login WHERE email = %s", (email,))
+    cursor.execute("SELECT id FROM user_login WHERE email = ?", (email,))
     user = cursor.fetchone()
 
     if user:
         token = generate_token(email)
         send_email(email, token)
-
+    conn.close()
     return "Se o email existir, enviamos o link."
         
 
 @app.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_password(token):
+    conn = get_db_connection()
+    cursor = conn.cursor()
     try:
         email = serializer.loads(token, salt="reset-password", max_age=3600)
     except SignatureExpired:
@@ -325,11 +333,11 @@ def reset_password(token):
     password_hash = generate_password_hash(new_password)
 
     cursor.execute(
-        "UPDATE user_login SET password = %s WHERE email = %s",
+        "UPDATE user_login SET pass_hash = ? WHERE email = ?",
         (password_hash, email)
     )
     conn.commit()
-
+    conn.close()
     return "Senha redefinida com sucesso."
     
 @app.route("/logout")
@@ -340,10 +348,11 @@ def logout():
 
 @app.route("/planner", methods=["GET", "POST"])
 def planner():
+    conn = get_db_connection()
+    cursor = conn.cursor()
     user_id = session.get("user_id")
-    cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
+    cursor.execute("SELECT id FROM user_profile WHERE user_id = ?", (user_id,))
     user_profile_id =cursor.fetchone()["id"]
 
     if request.method == "GET":
@@ -352,7 +361,7 @@ def planner():
         cursor.execute("SELECT meal.id, meal.meal_name " \
             "FROM user_profile_meal " \
             "INNER JOIN meal ON user_profile_meal.meal_id = meal.id "
-            "WHERE user_profile_meal.profile_id = %s", (user_profile_id,))
+            "WHERE user_profile_meal.profile_id = ?", (user_profile_id,))
 
         choice_meal = cursor.fetchall()     
         cursor.close()
@@ -362,20 +371,15 @@ def planner():
 
             print("meals", meals)
 
-        """ -------------- Protein ------------"""
+    conn.close()
+    return render_template("planner.html", choice_meal=choice_meal,saved=saved)
 
 
-        return render_template("planner.html", choice_meal=choice_meal,saved=saved)
-
-
-    """return render_template(
-        "planner.html",
-        meals=meals,
-        saved=saved,
-    )
-"""
 if __name__ == "__main__":
     import os
+    app.run(debug=True)
     PORT = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=PORT)
+
+
 
