@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title> Perfil Nutriplanner </title>
+    <style>
+        * {
+      box-sizing: border-box;
+    }
+        body {
+            margin: 0;
+            min-height: 100dvh;
+            display:flex ; 
+            justify-content: center;
+            align-items: center;
+            background: rgb(209, 174, 161); 
+            font-family:sans-serif ; 
+            padding: 24px;
+        }
+        .container-grid {
+            display: grid;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgb(163, 196, 206);
+            border: 2px solid rgb(57, 78, 61);
+            border-radius: 8px;
+            padding: clamp(1px, 2vw, 30px);
+            gap: 20px;
+            grid-template-columns:  minmax(0, 1fr) minmax(0, 1.4fr);
+            align-items: center;
+            
+        }
+        /* --------- basics settings -----------*/
+        .title_page{
+            grid-column: 1 / -1;  
+            margin: 0; 
+            text-align: center;
+            font-size: clamp(12px, 3vw, 20px);
+            background-color: rgba(255, 0, 0, 0.3); 
+        }
+        .base_words{
+            font-style: initial;
+            font-size:  clamp(10px, 3vw, 15px);
+            text-align: center;
+        }
+        .box{
+            background-color: rgba(98, 98, 99, 0.274);
+            color: rgb(3, 8, 8);
+            border: black;
+            border-radius: 0vh;
+            cursor: text;
+            font-weight: bold;
+            font-size: clamp(14px, 3vw, 18px);
+        }
+        .table_title{
+            grid-column: 1 / -1;  
+            margin: 0; 
+            text-align: center;
+            font-size: clamp(12px, 3vw, 20px);
+            font-style: initial;
+            color: blue;
+        }
+        .background{
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 2fr;
+            column-gap: 10px;
+            row-gap: 2px;
+            align-items: center;
+            grid-column: 1 / -1;
+            width: 100%;
+            padding: 6px 12px;
+        }
+        .background_pair{
+            background-color: rgba(50, 93, 128, 0.274);
+        }
+        .background_unpaired{
+            background-color: rgba(54, 54, 95, 0.274);
+        }
+        /* --------------- grid --------------- */
+        .group_style{
+            grid-column: 1;
+            margin: 0; 
+            text-align: center;
+            font-size: clamp(10px, 3vw, 15px);
+            font-style: initial;
+            color: rgb(24, 24, 63);
+            width: 100%;
+            grid-row: 1/3;
+        }
+        .subgroup{
+            grid-column: 2;
+        }
+        .food{
+            grid-column: 3;
+        }
+        
+         /* ------------- bottoms -------------*/
+        .bottom-save{
+            grid-column: 1/ span 2;
+            grid-row: 15;
+            background-color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 4vw, 25px);
+        }
+        .bottom_back {
+            grid-column: 1/ span 2;
+            grid-row: 16;
+            background: rgb(255, 255, 255);
+            color: rgb(3, 8, 8);
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 4vw, 25px);
+            transition: 0.1s;
+        }
+        .bottom_logout{
+            grid-column: 1/ span 2;
+            grid-row: 17;
+            background-color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 4vw, 25px);            
+        }
+        .input-base {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            background-color: rgba(210, 210, 214, 0.274);
+            color: rgb(0, 0, 0);
+            border: 1px solid black;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: clamp(10px, 2vw, 16px);
+        }
+
+    </style>
+</head>
+<body>
+    <form class="container-grid" id="form-perfil" action="{{ url_for('planner', user_profile_id=user_profile_id) }}" method="POST">
+        <h1 class="title_page">  Planner  </h1>
+
+        <label for="meal" class="meal base_words "> Refeicao </label>
+        <select id= "choice_meal" name="choice_meal" class="input-base choice_meal"  required>
+                <option value="" disabled selected> Escolha....</option>
+                {% for meals in choice_meal %}
+                <option value="{{meals['id']}}" > {{meals['meal_pt']}}</option>
+                {% endfor %}
+            </select> 
+        
+            <div class="background_pair table_title background">
+                <label for="group" > GRUPOS </label>
+                <label for="subgroup" > SUBGRUPO </label>
+                <label for="food" > ALIMENTO </label>
+            </div>    
+
+            <div class="background_unpaired background">
+                <label for="protein" class=" group_style"> Proteina </label>
+                <select id="sub_protein" name="sub_protein" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="protein_food" name="protein_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="sub_protein" name="sub_protein" class=" base_words input-base subgroup" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="protein_food" name="protein_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+            </div>
+
+            <div class="background_pair background">
+                <label for="carb" class="group_style"> Caboidrato </label>
+                <select id="sub_carb" name="sub_carb" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="carb_food" name="carb_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="sub_carb" name="sub_carb" class=" base_words input-base subgroup" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="carb_food" name="carb_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+            </div>
+     
+            <div class="background_unpaired background">
+                <label for="protein" class=" group_style"> Leguminosas </label>
+                <select id="sub_protein" name="sub_protein" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="protein_food" name="protein_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="sub_protein" name="sub_protein" class=" base_words input-base subgroup" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="protein_food" name="protein_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+            </div>
+
+            <div class="background_pair background">
+                <label for="carb" class="group_style"> Vegetais / Legumes </label>
+                <select id="sub_carb" name="sub_carb" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="carb_food" name="carb_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="sub_carb" name="sub_carb" class=" base_words input-base subgroup" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="carb_food" name="carb_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+            </div>
+
+            <div class="background_unpaired background">
+                <label for="protein" class=" group_style"> Complementos </label>
+                <select id="sub_protein" name="sub_protein" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="protein_food" name="protein_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="sub_protein" name="sub_protein" class=" base_words input-base subgroup" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="protein_food" name="protein_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+            </div>
+
+            <div class="background_pair background">
+                <label for="carb" class="group_style"> Bebidas </label>
+                <select id="sub_carb" name="sub_carb" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="carb_food" name="carb_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="sub_carb" name="sub_carb" class=" base_words input-base subgroup" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="carb_food" name="carb_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+            </div>
+
+            <div class="background_unpaired background">
+                <label for="protein" class=" group_style"> Frutas </label>
+                <select id="sub_protein" name="sub_protein" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="protein_food" name="protein_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="sub_protein" name="sub_protein" class=" base_words input-base subgroup" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="protein_food" name="protein_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+            </div>
+
+            <div class="background_pair background">
+                <label for="carb" class="group_style"> Doces </label>
+                <select id="sub_carb" name="sub_carb" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="carb_food" name="carb_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="sub_carb" name="sub_carb" class=" base_words input-base subgroup" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="carb_food" name="carb_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+            </div>
+
+            <div class="background_unpaired background">
+                <label for="protein" class=" group_style"> Laticineos e Frios </label>
+                <select id="sub_protein" name="sub_protein" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="protein_food" name="protein_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="sub_protein" name="sub_protein" class=" base_words input-base subgroup" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+                <select id="protein_food" name="protein_food" class=" base_words input-base" required>
+                    <option value="" disabled selected> Escolha.... </option>
+                        <option value="1">Café da manhã</option>
+                        <option value="2">Lanche da manhã</option>
+                        <option value="3">Almoço</option>
+                </select>
+            </div>
+
+        <button id="bottomsave" type="submit" class="bottom-save">
+            {% if saved %}
+            Salvo
+            {%else%}
+            Salvar
+            {% endif %}
+        </button>  
+
+        <button id="bottom_logout" type="button" class="bottom_logout"> Sair</button>
+
+        <button id="bottomBack" type="button" onclick="history.back()" class="bottom_back"> Voltar </button>
+    </form>
+
+    {% if login_error %}
+    <p>Usuario nao encontrado ou senha incorreta.</p>
+    {% endif %}
+
+    
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.querySelector("fomr")
+            const bottomsave= document.getElementById("bottomsave")
+            const logout = document.getElementById("bottom_logout")
+            const planner = document.getElementById("bottom-planner")
+
+            planner.addEventListener("click", function(){
+                window.location.href = "{{ url_for('logout') }}";});
+
+            logout.addEventListener("click", function(){
+                window.location.href = "{{ url_for('logout') }}";});
+
+            if (!form || !bottomsave) return;
+
+            const fields = form.querySelectorAll("input, select, textearea");
+
+            fields.forEach(field=> {
+                field.addEventListener("input", function(){
+                    bottomsave.textContent = "Salvar";
+                });
+                field.addEventListener("change", function () {
+                buttonsave.textContent = "Salvar";
+            });
+            });
+            });
+    
+    </script>
+
+</body>
+</html>

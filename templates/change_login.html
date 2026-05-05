@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title> Alterar Nutriplanner </title>
+    <style>
+        * {
+      box-sizing: border-box;
+    }
+        body {
+            margin: 0;
+            min-height: 100dvh;
+            display:flex ; 
+            justify-content: center;
+            align-items: center;
+            background: rgb(223, 155, 130); 
+            font-family:sans-serif ; 
+            padding: 24px;
+        }
+        .container-grid {
+            display: grid;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgb(163, 196, 206);
+            border: 2px solid rgb(57, 78, 61);
+            border-radius: 8px;
+            padding: clamp(2px, 3vw, 32px);
+            gap: 16px;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+            align-items: center;
+            
+        }
+        .titulo {
+            grid-column: 1 / -1;  
+            margin: 0; 
+            text-align: center;
+            font-size: clamp(12px, 3vw, 20px);
+            background-color: rgba(255, 0, 0, 0.3); 
+        }
+        .base_words{
+            font-style: initial;
+            font-size:  clamp(8px, 2vw, 14px);
+        }
+        .box{
+            background-color: rgba(98, 98, 99, 0.274);
+            color: rgb(3, 8, 8);
+            border: black;
+            border-radius: 0vh;
+            cursor: text;
+            font-weight: bold;
+            font-size: clamp(14px, 3vw, 18px);
+        }
+        .box-old_gmail{
+            grid-column: 2;
+            grid-row: 2;
+        }
+        .box-new_gmail{
+            grid-column: 2;
+            grid-row: 3;
+        }
+        .box-password{
+            grid-column: 2;
+            grid-row: 4;
+        }
+        .old_gmail{
+            display: grid;
+            grid-column: 1;
+            grid-row: 2;
+        }
+        .new_gmail{
+            display: grid;
+            grid-column: 1;
+            grid-row: 3;
+        }
+        .password{
+            grid-column: 1;
+            grid-row: 4;
+        }
+        .bottom-enter{
+            grid-column: 1/ span 2;
+            grid-row: 6;
+            background-color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 4vw, 25px);
+        }
+        .bottom_back {
+            grid-column: 1/ span 2;
+            grid-row: 7;
+            background: rgb(255, 255, 255);
+            color: rgb(3, 8, 8);
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 4vw, 25px);
+            transition: 0.1s;
+        }
+        .bottom-enter {
+            transform: translateY(2px);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    {% if request.args.get('email_error') %}
+        <p class="error-message">Current email is incorrect.</p>
+    {% endif %}
+
+    {% if request.args.get('password_error') %}
+    <p class="error-message">Password is incorrect.</p>
+    {% endif %}
+
+    {% if request.args.get('saved') %}
+    <p class="success-message">Email updated successfully.</p>
+    {% endif %}
+
+    <form class="container-grid" id="form-alterar" action="{{ url_for('change_login') }}" method="POST">
+        <h1 class="titulo">  Alterar Email </h1>
+
+        <label for="old_gmail" class="old_gmail base_words"> Antigo Email </label>
+        <input id= "old_gmail" name="old_gmail" class="box-gmail box" type="email" required>
+        
+        <label for="new_gmail" class="new_gmail base_words"> Novo Email </label>
+        <input id= "new_gmail" name="new_gmail" class="box-gmail box" type="email" required>
+
+        <label for="password" class="password base_words"> Senha </label>
+        <input id="password" name="password" class="box-password box" type="password" required> 
+        
+        <button id="bottomEnter" type="submit" class="bottom-enter"> Alterar </button>
+        <button id="bottomBack" type="button" onclick="history.back()" class="bottom_back"> Voltar </button>
+    </form>
+    
+    <script>
+    
+    </script>
+
+</body>
+</html>

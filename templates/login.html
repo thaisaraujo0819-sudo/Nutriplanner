@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title> Login Nutriplanner </title>
+    <style>
+        * {
+      box-sizing: border-box;
+    }
+        body {
+            margin: 0;
+            min-height: 100dvh;
+            display:flex ; 
+            justify-content: center;
+            align-items: center;
+            background: rgb(223, 155, 130); 
+            font-family:sans-serif ; 
+            padding: 24px;
+        }
+        .container-grid {
+            display: grid;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgb(163, 196, 206);
+            border: 2px solid rgb(57, 78, 61);
+            border-radius: 8px;
+            padding: clamp(2px, 3vw, 32px);
+            gap: 16px;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+            align-items: center;
+            
+        }
+        .titulo {
+            grid-column: 1 / -1;  
+            margin: 0; 
+            text-align: center;
+            font-size: clamp(12px, 3vw, 20px);
+            background-color: rgba(255, 0, 0, 0.3); 
+        }
+        .box-gmail{
+            grid-column: 2;
+            grid-row: 2;
+            background-color: rgba(98, 98, 99, 0.274);
+            color: rgb(3, 8, 8);
+            border: black;
+            border-radius: 0vh;
+            cursor: text;
+            font-weight: bold;
+            font-size: clamp(8px, 5vw, 30px);
+        }
+        .box-password{
+            grid-column: 2;
+            grid-row: 3;
+            background-color: rgba(98, 98, 99, 0.274);
+            color: rgb(3, 8, 8);
+            border: black;
+            border-radius: 0vh;
+            cursor: text;
+            font-weight: bold;
+            font-size: clamp(8px, 5vw, 30px);
+        }
+        .gmail{
+            display: grid;
+            grid-column: 1;
+            grid-row: 2;
+            font-weight: bold;
+            font-size: clamp(6px, 4vw, 25px);
+        }
+        .password{
+            grid-column: 1;
+            grid-row: 3;
+            font-weight: bold;
+            font-size: clamp(6px, 4vw, 25px);
+        }
+        .bottom-enter{
+            grid-column: 1/ span 2;
+            grid-row: 4;
+            background-color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 3vw, 25px);
+        }
+        .bottom-new-login {
+            grid-column: 1/ span 2;
+            grid-row: 5;
+            background: rgb(255, 255, 255);
+            color: rgb(3, 8, 8);
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 3vw, 25px);
+            transition: 0.1s;
+        }
+        .bottom-forgot_password {
+            grid-column: 1/ span 2;
+            grid-row: 6;
+            background: rgb(255, 255, 255);
+            color: rgb(3, 8, 8);
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 3vw, 25px);
+            transition: 0.1s;
+        }
+        .bottom-enter {
+            transform: translateY(2px);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <form class="container-grid" id="form-login" action="{{url_for('login')}} "method="POST">
+        <h1 class="titulo">  LOGIN </h1>
+
+        <label for="gmail" class="gmail"> Gmail </label>
+        <input id= "gmail" name="gmail" class="box-gmail" type="email" required>
+
+        <label for="password" class="password"> Password </label>
+        <input id="password" name="password" class="box-password" type="password" required> 
+        
+        <button id="bottomEnter" type="submit" class="bottom-enter">Entrar</button>
+        <button id="bottomNew" type="button" class="bottom-new-login">Novo Usuario</button>
+        <button id="bottom-forgot_password" type="button" class="bottom-forgot_password"> Esqueceu a senha </button>
+    </form>
+
+    {% if login_error %}
+    <p class="login-error">Usuario nao encontrado ou senha incorreta.</p>
+    {% endif %}
+
+    
+    <script>
+        const formulario = document.getElementById("form-login");
+        const campoGmail = document.getElementById("gmail");
+        const campoPassword = document.getElementById("password");
+        const bottomEnter = document.getElementById("bottomEnter");
+        const bottomNew = document.getElementById("bottomNew");
+        const bottom_forgot_pass = document.getElementById("bottom-forgot_password")
+
+        bottomNew.addEventListener("click", function(){
+            window.location.href = "{{url_for('register')}}";});
+        
+        bottom_forgot_pass.addEventListener("click", function(){
+            window.location.href = "{{url_for('forgot_password')}}";});
+
+        formulario.addEventListener("submit", function(event) {
+            
+
+            const gmail = campoGmail.value.trim();
+            const password = campoPassword.value.trim();
+            if (gmail === "" || password === ""){
+                event.preventDefault();
+                alert("Preencha gmail e senha");
+                return;
+            }
+            
+        });
+    
+    </script>
+
+</body>
+</html>
+

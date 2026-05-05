@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title> Perfil Nutriplanner </title>
+    <style>
+        * {
+      box-sizing: border-box;
+    }
+    /* --------- basics settings -----------*/
+        body {
+            margin: 0;
+            min-height: 100dvh;
+            display:flex ; 
+            justify-content: center;
+            align-items: center;
+            background: rgb(209, 174, 161); 
+            font-family:sans-serif ; 
+            padding: 24px;
+        }
+        .container-grid {
+            display: grid;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgb(163, 196, 206);
+            border: 2px solid rgb(57, 78, 61);
+            border-radius: 8px;
+            padding: clamp(1px, 2vw, 30px);
+            gap: 16px;
+            grid-template-columns:  minmax(0, 1fr) minmax(0, 1.4fr);
+            align-items: center;
+            
+        }
+        .bloco_medidas{
+            display: grid;
+            grid-template-columns: auto minmax(15ch, 25ch) auto minmax(15ch, 25ch);
+            column-gap: 10px;
+            row-gap: 2px;
+            align-items: center;
+        }
+        .base_words{
+            font-style: initial;
+            font-size:  clamp(8px, 2vw, 14px);
+        }
+        .titulo {
+            grid-column: 1 / -1;  
+            margin: 0; 
+            text-align: center;
+            font-size: clamp(12px, 3vw, 20px);
+            background-color: rgba(255, 0, 0, 0.3); 
+        }
+        .box{
+            background-color: rgba(98, 98, 99, 0.274);
+            color: rgb(3, 8, 8);
+            border: black;
+            border-radius: 0vh;
+            cursor: text;
+            font-weight: bold;
+            font-size: clamp(14px, 3vw, 18px);
+        }
+
+    /* ----------- positions box and words ---------- */
+        .box-name{
+            grid-column: 2;
+            grid-row: 2;
+        }
+        .box-gmail{
+            grid-column: 2;
+            grid-row: 3;
+        }
+        .box-birthday{
+            grid-column: 2;
+            grid-row: 4;
+        }
+        .box-height{
+            grid-column: 2;
+        }
+        .box-weight{
+            grid-column: 4;
+        }
+        .box-gender{
+            grid-column: 2;
+            grid-row: 6;
+        }
+        
+        .box-goal{
+            grid-column: 2;
+            grid-row: 7;
+        }
+        .box-goal_pace{
+            grid-column: 2;
+            grid-row: 8;
+        }
+        .box-exercise{
+            grid-column: 2;
+            grid-row: 9;
+        }
+        .box-principal_meal{
+            grid-column: 2;
+            grid-row: 10;
+        }
+        
+        .box-eats_sweet{
+            grid-column: 2;
+            grid-row: 11;
+            
+        }
+        .box-vegetable{
+            grid-column: 2;
+            grid-row: 12;
+        }
+        .box-legumes{
+            grid-column: 2;
+            grid-row: 13;
+        }
+        .box-meals{
+            grid-column: 2;
+            grid-row: 14;
+        }
+        .name{
+            display: grid;
+            grid-column: 1;
+            grid-row: 2;
+        }
+        .gmail{
+            grid-column: 1;
+            grid-row: 3;
+        }
+        .birthday{
+            grid-column: 1;
+            grid-row: 4;
+        }
+        .height{
+            grid-column: 1;
+        }
+        .weight{
+            grid-column: 3;
+        }
+        .gender{
+            grid-column: 1;
+            grid-row: 6;
+        } 
+        .goal{
+            grid-column: 1;
+            grid-row: 7;
+        }
+        .goal_pace{
+            grid-column: 1;
+            grid-row: 8;
+        }
+        .exercise{
+            grid-column: 1;
+            grid-row: 9;
+        }
+        .principal_meal{
+            grid-column: 1;
+            grid-row: 10;
+        }
+        
+        .eats_sweet{
+            grid-column: 1;
+            grid-row: 11;
+        }
+        .vegetable{
+            grid-column: 1;
+            grid-row: 12;
+        }
+        .legumes{
+            grid-column: 1;
+            grid-row: 13;
+        }
+        .meals{
+            grid-column: 1;
+            grid-row: 14;
+        }
+        .bottom-save{
+            grid-column: 1/ span 2;
+            grid-row: 15;
+            background-color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 4vw, 25px);
+        }
+        .bottom-planner{
+            grid-column: 1/ span 2;
+            grid-row: 16;
+            background-color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 4vw, 25px);
+        }
+        .bottom_logout{
+            grid-column: 1/ span 2;
+            grid-row: 17;
+            background-color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 4vw, 25px);            
+        }
+        .input-base {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            background-color: rgba(98, 98, 99, 0.274);
+            color: rgb(3, 8, 8);
+            border: 1px solid black;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: clamp(10px, 1.8vw, 16px);
+        }
+        .checkbox-label {
+            grid-column: 2;          /* fica na coluna dos campos */
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .meal_option{
+            display: flex;
+            align-items: baseline;
+            gap: 2px;
+            white-space: nowrap; 
+        }
+        .email_line{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .email_value{
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <form class="container-grid" id="form-perfil" action="{{ url_for('perfil') }}" method="POST">
+        <h1 class="titulo">  Perfil </h1>
+
+        <label for="name" class="name base_words "> Nome e Sobrenome </label>
+        <input id= "name" name="name" class="box-name box" type="text" value="{{ perfil.name or '' }}" required>
+
+        <label for="gmail" class="gmail base_words"> Email </label>
+        <div class="email_line">
+             <p class="email_value">{{ gmail }}</p>
+            <a href="{{ url_for('change_login') }}">Alterar Email </a>
+        </div>
+        
+
+        <label for="birthday" class="birthday base_words"> Aniversario </label>
+        <input id= "birthday" name="birthday" class="box-birthday box" type="date" value="{{ perfil.birthday or '' }}" required>
+
+        <div class="bloco_medidas">
+            <label for="height" class="height base_words"> Altura </label>
+            <input id= "height" name="height" class="box-height box" type="number" step="1" min="120" value="{{ perfil.height or '' }}" required>
+        
+            <label for="weight" class="weight base_words"> Peso </label>
+            <input id= "weight" name="weight" class="box-weight box" type="number" step="0.01" min="40" value="{{ perfil.weight or '' }}" required>
+        </div>
+        
+        
+        <label for="gender" class="gender base_words"> Sexo </label>
+            <select id="gender" name="gender" class="input-base box-gender" required>
+                <option value="" disabled selected> Escolha....</option>
+                <option value="F" {% if perfil.gender == "F" %}selected{% endif %} >Mulher</option>
+                <option value="M" {% if perfil.gender == "M" %}selected{% endif %}>Homem</option>
+            </select> 
+
+        <label for="goal" class="goal base_words"> Objetivo </label>
+            <select id= "goal" name="goal" class="input-base box-goal" required>
+                <option value="" disabled selected> Escolha....</option>
+                <option value="1" {% if perfil.goal_id == 1 %}selected{% endif %}>Perder Peso</option>
+                <option value="2" {% if perfil.goal_id == 2 %}selected{% endif %}>Ganhar Musculo/Peso</option>
+                <option value="3" {% if perfil.goal_id == 3 %}selected{% endif %}>Manter Peso</option>
+            </select> 
+
+        <label for="goal_pace" class="goal_pace base_words"> Velocidade do objetivo </label>
+            <select id= "goal_pace" name="goal_pace" class="input-base box-goal_pace" required>
+                <option value="" disabled selected> Escolha....</option> 0.3kg/semana , b- 0.5kg/semana, c- 0.75kg/semana, d- , e- 0.0kg/semana",
+                <option value="1" {% if perfil.goal_pace_id == 1 %}selected{% endif %}>0.3kg/semana</option>
+                <option value="2" {% if perfil.goal_pace_id == 2 %}selected{% endif %}>0.5kg/semana</option>
+                <option value="3" {% if perfil.goal_pace_id == 3 %}selected{% endif %}>0.75kg/semana</option>
+                <option value="4" {% if perfil.goal_pace_id == 4 %}selected{% endif %}>1.0kg/semana</option>
+                <option value="5" {% if perfil.goal_pace_id == 5 %}selected{% endif %}>0.0kg/semana</option>
+            </select> 
+
+        <label for="exercise" class="exercise base_words"> Nivel de exercicio </label>  
+            <select id= "exercise" name="exercise" class="input-base box-exercise" required>
+                <option value="" disabled selected> Escolha....</option>
+                <option value="1" {% if perfil.exercise_id == 1 %}selected{% endif %}>Sedentário</option>
+                <option value="2" {% if perfil.exercise_id == 2 %}selected{% endif %}>Leve</option>
+                <option value="3" {% if perfil.exercise_id == 3 %}selected{% endif %}>Moderado</option>
+                <option value="4" {% if perfil.exercise_id == 4 %}selected{% endif %}>Muito Ativo</option>
+                <option value="5" {% if perfil.exercise_id == 5 %}selected{% endif %}>Extremamente Ativo</option>
+            </select> 
+
+        <label for="principal_meal" class="principal_meal base_words"> Refeicao Principal </label>
+            <select id= "principal_meal" name="principal_meal" class="input-base box-principal_meal"  required>
+                <option value="" disabled selected> Escolha....</option>
+                <option value="1" {% if perfil.principal_meal_id == 1 %}selected{% endif %}> Café da Manha </option>
+                <option value="2" {% if perfil.principal_meal_id == 2 %}selected{% endif %}> Lanche da Manha </option>
+                <option value="3" {% if perfil.principal_meal_id == 3 %}selected{% endif %}> Almoco </option>
+                <option value="4" {% if perfil.principal_meal_id == 4 %}selected{% endif %}>Lanche da Tarde </option>
+                <option value="5" {% if perfil.principal_meal_id == 5 %}selected{% endif %}> Janta </option>
+                <option value="6" {% if perfil.principal_meal_id == 6 %}selected{% endif %}> Sem refeicao </option>
+            </select> 
+
+        <label for="eats_sweet" class="eats_sweet base_words"> Come doce todo dia</label>
+            <div class="checkbox-duplo box-eats_sweet">
+                <label>Sim<input type="radio"  id="eats_sweet" name="eats_sweet" value="yes" required {% if perfil.eats_sweet_daily == 'yes'%}checked{% endif %}></label>
+                <label>Nao<input type="radio" name="eats_sweet" value="no"{% if perfil.eats_sweet_daily == 'no' %}checked{% endif %}></label>
+            </div>
+
+        <label for="vegetable" class="vegetable base_words"> Quantas gramas de vegetais por refeicao</label>
+        <input id= "vegetable" name="vegetable" class="box-vegetable box" type="number" value="{{ perfil.vegetable or '' }}">
+
+        <label for="legumes" class="legumes base_words"> Quantas gramas de legumes por refeicao</label>
+        <input id= "legumes" name="legumes" class="box-legumes box" type="number" value="{{ perfil.legumes or '' }}">
+
+        <label for="meals" class="meals base_words"> Refeicoes consumidas </label>
+            <div class ="box-meals checkbox-duplo base_words">
+                <label class="meal_option"> <input type="checkbox" name="meals" value="1" {% if '1' in perfil.meals %}checked{% endif %}> Cafe da Manha </label>
+                <label class="meal_option"> <input type="checkbox" name="meals" value="2" {% if '2' in perfil.meals  %}checked{% endif %}> Lanche da Manha </label>
+                <label class="meal_option"> <input type="checkbox" name="meals" value="3" {% if '3' in perfil.meals  %}checked{% endif %}> Almoco </label>
+                <label class="meal_option"> <input type="checkbox" name="meals" value="4" {% if '4' in perfil.meals  %}checked{% endif %}> Lanche da Tarde </label>
+                <label class="meal_option"> <input type="checkbox" name="meals" value="5" {% if '5' in perfil.meals  %}checked{% endif %}> Jantar </label>
+            </div> 
+        
+
+        <button id="bottomsave" type="submit" class="bottom-save">
+            {% if saved %}
+            Salvo
+            {%else%}
+            Salvar
+            {% endif %}
+        </button>
+
+        <button id="bottom-planner" type="button" class="bottom-planner"> Planejar Alimentacao </button>
+
+        <button id="bottom_logout" type="button" class="bottom_logout"> Sair</button>
+    </form>
+
+    {% if login_error %}
+    <p>Usuario nao encontrado ou senha incorreta.</p>
+    {% endif %}
+
+    
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.querySelector("form")
+            const bottomsave= document.getElementById("bottomsave")
+            const logout = document.getElementById("bottom_logout")
+            const planner = document.getElementById("bottom-planner")
+
+            planner.addEventListener("click", function(){
+                window.location.href = "{{ url_for('planner') }}";});
+
+            logout.addEventListener("click", function(){
+                window.location.href = "{{ url_for('logout') }}";});
+
+            if (!form || !bottomsave) return;
+
+            const fields = form.querySelectorAll("input, select, textearea");
+
+            fields.forEach(field=> {
+                field.addEventListener("input", function(){
+                    bottomsave.textContent = "Salvar";
+                });
+                field.addEventListener("change", function () {
+                buttonsave.textContent = "Salvar";
+            });
+            });
+            });
+    
+    </script>
+
+</body>
+</html>
