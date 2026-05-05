@@ -12,7 +12,7 @@ def get_db_connection():
     return conn
 @app.route("/")
 def home():
-    return "API online "
+    return redirect(url_for("login"))
 app.config["SECRET_KEY"] = "nutriplanner"
 app.secret_key = "senhasecreta"
 # Configuração do email
