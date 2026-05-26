@@ -1,0 +1,212 @@
+@charset "UTF-8";
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background-color: rgba(46, 44, 44, 0.671);
+  margin: 0;
+  font-family: sans-serif;
+  color: #201010;
+}
+
+.header {
+  width: 100%;
+  margin-left: 210px;
+}
+
+.header-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-left: 210px;
+}
+
+.title h1,
+.title h2 {
+  margin-top: 15px;
+}
+
+.logo_img {
+  width: 250px;
+  height: auto;
+  transition: 0.5s;
+  margin-top: 0px;
+}
+
+.bg-home {
+  position: relative;
+  min-height: 100vh;
+}
+
+.bg-home::before {
+  content: "";
+  display: block;
+  position: absolute;
+  background-image: linear-gradient(to bottom, rgb(30, 91, 79), rgba(14, 43, 37, 0.692)), url("./imagem/favorita.jpg");
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-size: cover;
+}
+
+.border {
+  border: 1px solid rgb(58, 53, 53);
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 200px;
+  height: 100%;
+  padding: 40px 10px 30px 10px;
+  border-right: 2px solid rgb(16, 46, 42);
+  transition: all 0.4s;
+}
+
+.sidebar_header {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.sidebar button {
+  height: 50px;
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+}
+
+.sidebar button > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  padding: 0 16px 0 12px;
+  border-radius: 24px;
+  line-height: 1;
+  transition: all 0.4s;
+}
+
+.sidebar button:hover > span {
+  background: rgb(141, 128, 128);
+}
+
+.sidebar button i {
+  position: relative;
+  font-size: 28px;
+  transition: transform 0.4s;
+}
+
+.sidebar button span {
+  font-size: 16px;
+}
+
+.sidebar > nav {
+  /*
+      flex-grow: quanto vai crescer esse item (primeiro numero)
+      flex-shrink: define o fator de reduçaõ
+      flex-basics: tamanho base de cada item
+      flex
+  */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.logo_img:hover {
+  transform: scale(1.2);
+}
+
+/*AJUSTAR SIDEBAR APENAS ICONS*/
+@media (width < 920px) {
+  body {
+    background-size: contain;
+    background-position: top center;
+  }
+  .sidebar {
+    width: 72px;
+  }
+  .sidebar button > span {
+    width: 50px;
+  }
+  .sidebar button > span > span {
+    opacity: 0;
+    visibility: hidden;
+  }
+  .main {
+    transition: margin 0.5s;
+    margin-left: 78px;
+  }
+}
+.button_mobile {
+  display: none;
+  align-items: center;
+  align-self: flex-start;
+  margin: 16px;
+  background: transparent;
+  color: white;
+  border: 0;
+}
+
+.button_mobile span {
+  font-size: 24px;
+  margin-left: 8px;
+}
+
+.menu_mobile {
+  display: none;
+}
+
+.menu_mobile_active {
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  z-index: 99;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.menu_mobile_active button {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  margin-bottom: 16px;
+}
+
+.menu_mobile_active button > span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.mobile_text {
+  font-size: 22px;
+  margin-left: 8px;
+}
+
+@media (max-widhth: 480px) {
+  .sidebar {
+    display: none;
+  }
+  .meu_mobile {
+    display: flex;
+  }
+  .main {
+    margin-left: 6px;
+  }
+}/*# sourceMappingURL=style.css.map */

@@ -1,0 +1,134 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background-color: rgba(46, 44, 44, 0.671);
+  margin: 0;
+  font-family: sans-serif;
+  color: #201010;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+.bg-home::before {
+  content: "";
+  display: block;
+  position: absolute;
+  background-image: linear-gradient(to bottom, rgba(30, 91, 79, 0.685), rgba(14, 43, 37, 0.74)), url("./imagem/favorita.jpg");
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-size: cover;
+}
+
+.container-grid {
+  display: grid;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  background: rgba(70, 97, 105, 0.815);
+  border: 2px solid rgb(25, 45, 56);
+  border-radius: 8px;
+  padding: clamp(2px, 3vw, 32px);
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  align-items: center;
+}
+
+.titulo {
+  grid-column: 1/-1;
+  margin: 0;
+  text-align: center;
+  font-size: clamp(12px, 4vw, 45px);
+  background-color: rgba(13, 73, 68, 0.774);
+  border-radius: 30px;
+}
+
+.box {
+  background-color: rgba(48, 48, 51, 0.651);
+  color: rgb(3, 8, 8);
+  border: black;
+  border-radius: 1vh;
+  cursor: text;
+  font-weight: bold;
+  font-size: clamp(8px, 5vw, 30px);
+}
+
+.insert-gmail {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.insert-password {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.gmail {
+  display: grid;
+  grid-column: 1;
+  grid-row: 2;
+  font-weight: bold;
+  font-size: clamp(6px, 4vw, 25px);
+}
+
+.password {
+  grid-column: 1;
+  grid-row: 3;
+  font-weight: bold;
+  font-size: clamp(6px, 4vw, 25px);
+}
+
+.actions {
+  display: grid;
+  grid-column: 1/span 2;
+  gap: 12px;
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: 0;
+}
+
+.bottom {
+  width: 100%;
+  background-color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  padding: clamp(8px, 2vw, 15px);
+  border: 1px solid #333;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-size: clamp(6px, 3vw, 25px);
+  transition: all 0.4s;
+  grid-column: 1/span 2;
+}
+
+.bottom:hover {
+  background: rgb(109, 96, 96);
+}
+
+.enter {
+  grid-row: 4;
+}
+
+.new-login {
+  grid-row: 5;
+}
+
+.forgot_password {
+  grid-row: 6;
+}
+
+.enter {
+  transform: translateY(2px);
+}
+
+.back {
+  grid-row: 7;
+}/*# sourceMappingURL=login.css.map */

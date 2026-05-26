@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
+    />    
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}"/>
+    <title>Nutriplanner Home</title>
+
+    
+</head>
+<body>
+    <div class="bg-home">
+        <header >
+            <nav class="header-content">
+            <div class="title">
+                <h1>BEM VINDOS ao NUTRIPLANNER </h1>
+                <h2>@nutriplanner</h2>
+            </div>
+            <div class="">
+                <img
+                    src="{{ url_for('static', filename='imagem/logo_semfundo.png') }}"
+                    alt="logo"
+                    class="logo_img"
+                    />
+            </div>
+            </nav>
+        </header>
+    </div>
+    <aside class="sidebar border">
+        <nav >
+            <button>
+                <span>
+                    <i class="material-symbols-outlined">home</i>
+                    <span>Home</span>
+                </span>
+            </button>
+            
+            <button>
+                <span>
+                    <i class="material-symbols-outlined">tag</i>
+                    <span>Explorar</span>
+                </span>
+            </button>
+
+            <button>
+                <span>
+                    <i class="material-symbols-outlined">email</i>
+                    <span>Mensagem</span>
+                </span>
+            </button>
+
+            <button type="button"  onclick="location.href='/login'">
+                <span>
+                    <i class="material-symbols-outlined">Person</i>
+                    <span>profile</span>
+                </span>
+            </button>
+        </nav>
+    </aside>
+
+    <!-- CRIAR MENU MOBILE -->
+    <button class="button_mobile">
+        <i class="material-symbols-outlined">menu</i>
+        <span>Menu</span>
+    </button>
+
+    <nav class="menu_mobile">
+        <button class="button-mobile">
+            <i class="material-symbols-outlined">close</i>
+        </button>
+        <button>
+            <span>
+                <i class="material-symbols-outlined">home</i>
+                <span class="mobile_text">Home</span>
+            </span>
+        </button>
+            
+        <button>
+            <span>
+                <i class="material-symbols-outlined">tag</i>
+                <span class="mobile_text">Explorar</span>
+            </span>
+        </button>
+
+        <button>
+            <span>
+                <i class="material-symbols-outlined">email</i>
+                <span class="mobile_text">Mensagem</span>
+            </span>
+        </button>
+
+        <button>
+            <span>
+                <i class="material-symbols-outlined">Person</i>
+                <span class="mobile_text">profile</span>
+            </span>
+        </button>
+    </nav>
+
+
+   
+</body>

@@ -1,0 +1,188 @@
+@charset "UTF-8";
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background-color: rgba(46, 44, 44, 0.397);
+  margin: 0;
+  font-family: sans-serif;
+  color: #201010;
+}
+
+header {
+  width: 100%;
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.title {
+  text-align: center;
+  color: rgb(189, 129, 45);
+  font-family: "Libre Baskerville", serif;
+  font-size: clamp(15px, 3vw, 25px);
+}
+
+.title h1 {
+  text-align: center;
+  margin: 0;
+  transform: translateY(40);
+  text-shadow: 4px 4px 6px rgba(56, 14, 14, 0.842), 4px 4px 20px rgba(2, 32, 26, 0.966);
+}
+
+.bg-home {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.bg-home::before {
+  content: "";
+  inset: 0;
+  position: fixed;
+  background-image: linear-gradient(to bottom, rgba(28, 107, 91, 0.473), rgba(20, 49, 43, 0.404)), url("./imagem/bg_perfil.webp");
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bottom:hover {
+  background: rgba(109, 99, 99, 0.781);
+}
+
+/* LOGO PERFIL E LOGO NUTRIPLANNER */
+.logo,
+.logo_perfil {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 4px 4px 6px rgba(56, 14, 14, 0.842), 4px 4px 20px rgba(2, 32, 26, 0.966);
+}
+
+.logo_img {
+  max-width: 300px;
+  width: 100%;
+}
+
+.perfil_img {
+  max-width: 400px;
+  width: 100%;
+}
+
+.perfil_img:hover,
+.logo_img:hover {
+  transform: scale(1.25);
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr minmax(300px, 600px) 1fr;
+  width: 100%;
+  min-height: auto;
+  padding: 20px 0 40px 0;
+  padding-top: 0px; /* espaço em cima */
+  padding-bottom: 40px;
+  -moz-column-gap: 8px;
+       column-gap: 8px;
+  row-gap: 8px;
+}
+
+.container-grid {
+  display: grid;
+  grid-column: 2;
+  grid-template-columns: 160px 1fr;
+  gap: 8px 8px;
+  width: 100%;
+  max-width: 600px;
+  padding: clamp(10px, 2vw, 30px);
+  background: rgba(45, 114, 133, 0.89);
+  border: 1px solid rgb(12, 41, 39);
+  border-radius: 8px;
+  align-items: center;
+}
+
+.bloco_medidas {
+  grid-column: 1/-1;
+  display: grid;
+  grid-template-columns: auto minmax(15ch, 25ch) auto minmax(15ch, 25ch);
+  gap: 10px;
+  align-items: center;
+}
+
+.base_words {
+  font-size: clamp(8px, 2vw, 14px);
+}
+
+.box {
+  background-color: rgba(98, 98, 99, 0.274);
+  color: #030808;
+  border: 1px solid black;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: clamp(12px, 2vw, 16px);
+}
+
+.input-base {
+  width: 100%;
+  background-color: rgba(98, 98, 99, 0.274);
+  border: 1px solid black;
+}
+
+/* ----------- positions box and words ---------- */
+.bottom-save {
+  width: 100%;
+  grid-column: 1/span 2;
+  background-color: white;
+  color: black;
+  border: 1px solid #333; /* 👈 borda aqui */
+  border-radius: 10px;
+  padding: clamp(6px, 1vw, 12px);
+  font-size: clamp(12px, 2vw, 16px);
+  cursor: pointer;
+}
+
+.checkbox-label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.meal_option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.email_line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.email_value {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 600px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+  .logo_perfil,
+  .logo {
+    display: none;
+  }
+}/*# sourceMappingURL=perfil.css.map */

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
+    />    
+    <link rel="stylesheet" href="{{url_for('static', filename='menu.css')}}"/>
+    <link
+        rel="preload"
+        as="image"
+        href="{{ url_for('static', filename='imagem/favorita.webp') }}">
+    <title> MENU Nutriplanner </title>
+    
+</head>
+<body>
+    <div class="bg-home" id="form-login" action="{{url_for('menu', name=name)}} "method="POST">
+        
+        <header >
+            <nav class="header-content">
+            <div class=" card_perfil">
+                <img src="{{ url_for('static', filename='imagem/perfil.png') }}">
+                <button onclick="location.href='/perfil'" class="bottom_perfil text"> Perfil </button>
+        </div>
+            <div class="title">
+                <h1>BEM VINDOS {{ name }}</h1>
+                <h2>@nutriplanner</h2>
+            </div>
+            <div class="logo">
+                <img
+                    src="{{ url_for('static', filename='imagem/logo_semfundo.png') }}"
+                    alt="logo"
+                    class="logo_img"
+                    />
+            </div>
+            </nav>
+        </header>
+
+
+        <div class="container" >
+            <div class="card_pc card_perfil_pc side0">
+                <img src="{{ url_for('static', filename='imagem/perfil.png') }}">
+                <button onclick="location.href='/perfil'" class="bottom text"> Perfil </button>
+            </div>
+            <div  class="card side1">
+                <img src="{{ url_for('static', filename='imagem/m.jpg') }}" alt="">
+                <button onclick="location.href='/manager_meals'" class="bottom text">Montar Refeições</button>
+            </div>
+
+            <div  class="card side2">
+                <img src="{{ url_for('static', filename='imagem/planner.png') }}" alt="">
+                <button onclick="location.href='/planner_meals'"class="bottom text">Planejar Refeições</button>
+            </div>
+            
+            <div  class="card side3">
+                <img src="{{ url_for('static', filename='imagem/print.png') }}" alt="">
+                <button onclick="location.href='/show_meals'"class="bottom text_long">Imprimir Refeição</button>
+            </div>
+
+            <div  class="card_min side4">
+                <img src="{{ url_for('static', filename='imagem/grocery_list.png') }}" alt="">
+                <button onclick="location.href='/grocery_list'"class="bottom text_long">Lista de Compras</button>
+            </div>
+
+            <button id="bottom_logout" type="button" class="bottom text logout">Sair</button>
+
+            <button id="bottom_grocery" type="button" onclick="location.href='/grocery_list'" class="bottom text grocery">Lista de Compras</button>
+
+        </div>
+
+    </div>
+    
+</div>
+    {% if login_error %}
+    <p class="login-error">Usuario nao encontrado ou senha incorreta.</p>
+    {% endif %}
+
+    
+    <script>
+        const formulario = document.getElementById("form-login");
+        const campoGmail = document.getElementById("gmail");
+        const bottom_perfil = document.getElementById("bottom_perfil");
+        const bottom_manager = document.getElementById("bottom_manager");
+        const bottom_planner = document.getElementById("bottom_planner");
+        const bottom_logout = document.getElementById("bottom_logout")
+        const bottom_grocery = document.getElementById("bottom_grocery")
+
+        bottom_perfil.addEventListener("click", function(){
+            window.location.href = "{{url_for('perfil')}}";});
+        
+        bottom_manager.addEventListener("click", function(){
+            window.location.href = "{{url_for('manager_meals')}}";});
+
+        bottom_planner.addEventListener("click", function(){
+            window.location.href = "{{url_for('planner_meals')}}";});
+        
+        bottom_logout.addEventListener("click", function(){
+            window.location.href = "{{url_for('logout')}}";});
+
+        bottom_grocery.addEventListener("click", function(){
+            window.location.href = "{{url_for('grocery_list')}}";});
+        formulario.addEventListener("submit", function(event) {
+            
+
+            const gmail = campoGmail.value.trim();
+            const password = campoPassword.value.trim();
+            if (gmail === "" || password === ""){
+                event.preventDefault();
+                alert("Preencha gmail e senha");
+                return;
+            }
+            
+        });
+    
+    </script>
+
+</body>
+</html>

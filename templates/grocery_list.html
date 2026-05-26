@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"/>    
+        
+    <link rel="stylesheet" href="{{url_for('static', filename='grocery_list.css')}}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    
+    <title> Alterar Nutriplanner </title>
+<body>
+<div class="bg-home" >
+        <div class="floating-left" action="{{ url_for('grocery_list') }}" method="POST">
+            <a href="{{ url_for('temporary_choices') }}">
+                <img src="{{ url_for('static', filename='imagem/planner_logo.png') }}"
+                    class="floating-img">
+            </a>
+        </div>
+
+        <header >
+            <nav class="header-content">          
+                <div class="title">
+                    <select id="choice" name="choice" class="input-base choice bottom" required>
+                    <option value=""  class="bottom" selected> Escolha....</option>
+                    {% for key in general.keys() %}
+                        <option value="{{ key }}" class="bottom">{{ key }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+            </nav>
+        </header>
+
+        <div class="floating-right">
+            <a href="{{ url_for('menu') }}">
+                <img src="{{ url_for('static', filename='imagem/menu_logo.png') }}"
+                    class="floating-img">
+            </a>
+        </div>
+
+
+    <section id="list-container" class="meals-grid"></section>
+
+</div>
+
+<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const select = document.getElementById("choice");
+            const container = document.getElementById("list-container");
+
+            // ----------- bottom choice and dictionary list --------
+            const general = JSON.parse('{{ general | tojson | safe }}');
+            console.log("general ", general)
+
+            function renderList(key) {
+                
+                console.log("renderList chamado com:", key);
+                
+                const data = general[key];
+
+                if (!data) {container.innerHTML = "<p></p>";
+                    return;
+                }
+
+                let html = "<ul class='shopping-list'>";
+
+                for (const [name, grams] of Object.entries(data)) {
+                    html += `
+                        <li class="shopping-item">
+                        <input type="checkbox" class="check-item">
+                        <span class="food-name">${name}</span>
+                        <span class="food-grams">${Number(grams).toFixed(2)}g</span>
+                        </li>
+                        `;
+                    }
+
+                html += "</ul>";
+
+                container.innerHTML = html;
+            }
+
+            select.addEventListener("change", function () {
+                renderList(this.value);
+                });
+
+            // render inicial
+            if (select.value) {
+                renderList(select.value);
+            } else {
+                container.innerHTML = "<p>Escolha uma lista acima</p>";
+            }
+        });
+</script>
+
+</body>
+</html>

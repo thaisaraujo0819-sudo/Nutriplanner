@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title> Perfil Nutriplanner </title>
+    <style>
+        * {
+      box-sizing: border-box;
+    }
+        body {
+            margin: 0;
+            min-height: 100dvh;
+            display:flex ; 
+            justify-content: center;
+            align-items: center;
+            background: rgb(209, 174, 161); 
+            font-family:sans-serif ; 
+            padding: 24px;
+        }
+        .container-grid {
+            display: grid;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgb(163, 196, 206);
+            border: 2px solid rgb(57, 78, 61);
+            border-radius: 8px;
+            padding: clamp(1px, 1vw, 30px);
+            gap: 20px;
+            grid-template-columns:  minmax(0, 1fr) minmax(0, 1.4fr);
+            align-items: center;
+            
+        }
+        /* --------- basics settings -----------*/
+        .title_page{
+            grid-column: 1 / -1;  
+            margin: 0; 
+            text-align: center;
+            font-size: clamp(12px, 3vw, 20px);
+            background-color: rgba(255, 0, 0, 0.3); 
+        }
+        .base_words{
+            font-style: initial;
+            font-size:  clamp(10px, 3vw, 15px);
+            text-align: center;
+        }
+        .box{
+            background-color: rgba(98, 98, 99, 0.274);
+            color: rgb(3, 8, 8);
+            border: black;
+            border-radius: 0vh;
+            cursor: text;
+            font-weight: bold;
+            font-size: clamp(12px, 2vw, 18px);
+        }
+        .table_title{
+            grid-column: 1 / -1;  
+            margin: 0; 
+            text-align: center;
+            font-size: clamp(12px, 3vw, 20px);
+            font-style: initial;
+            color: blue;
+        }
+        .background{
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 2fr 1.5fr;
+            column-gap: 10px;
+            row-gap: 2px;
+            align-items: center;
+            grid-column: 1 / -1;
+            width: 100%;
+            padding: 6px 12px;
+        }
+        .background_pair{
+            background-color: rgba(50, 93, 128, 0.274);
+        }
+        .background_unpaired{
+            background-color: rgba(54, 54, 95, 0.274);
+        }
+        /* --------------- grid --------------- */
+        .group_style{
+            grid-column: 1;
+            margin: 0; 
+            text-align: center;
+            font-size: clamp(10px, 3vw, 15px);
+            font-style: initial;
+            color: rgb(24, 24, 63);
+            width: 100%;
+            grid-row: 1/3;
+        }
+        .subgroup{
+            grid-column: 2;
+        }
+        .food{
+            grid-column: 3;
+        }
+        
+         /* ------------- bottoms -------------*/
+        .bottom-save{
+            grid-column: 1/ span 2;
+            grid-row: 22;
+            background-color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 4vw, 25px);
+        }
+        .bottom_back {
+            grid-column: 1/ span 2;
+            grid-row: 23;
+            background: rgb(255, 255, 255);
+            color: rgb(3, 8, 8);
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 4vw, 25px);
+            transition: 0.1s;
+        }
+        .bottom_logout{
+            grid-column: 1/ span 2;
+            grid-row: 24;
+            background-color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: bold;
+            padding:  clamp(8px, 30px);
+            border: 1px solid #333;
+            font-size: clamp(6px, 4vw, 25px);            
+        }
+        .input-base {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            background-color: rgba(210, 210, 214, 0.274);
+            color: rgb(0, 0, 0);
+            border: 1px solid black;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: clamp(10px, 2vw, 16px);
+        }
+
+        /* ---------- classes for JS ---------- */
+        .subgroup_select{
+            color: #000;
+        }
+        .method_select{
+            color: #000;
+        }
+        .food_select{
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <form class="container-grid" id="form-perfil" action="{{ url_for('salvar_planejamento', user_profile_id=user_profile_id) }}" method="POST">
+        <h1 class="title_page">  Planner  </h1>
+
+        <label for="meal" class="meal base_words "> Refeicao </label>
+        <select id= "choice_meal" name="choice_meal" class="input-base choice_meal"  required>
+                <option value="" disabled selected> Escolha....</option>
+                {% for meals in choice_meal %}
+                <option value="{{meals['id']}}" > {{meals['meal_pt']}}</option>
+                {% endfor %}
+            </select> 
+        
+            <div class="background_pair table_title background">
+                <label for="group" > GRUPO </label>
+                <label for="subgroup" > SUBGRUPO </label>
+                <label for="food" > ALIMENTO </label>
+                <label for="food" > METODO </label>
+            </div>    
+
+            {% for i in range(2) %}
+            <div class="background_unpaired background">
+                <label for="sub_protein_{{ i }}" class="group_style">Proteina {{ i + 1 }}</label>
+
+                <select id="sub_protein_{{ i }}" name="sub_protein_{{ i }}" class=" subgroup_select base_words input-base" data-foodtarget="food{{i}}">
+                    <option value="" disabled selected>Escolha....</option>
+                        {% for sub_protein in groups_subgroups['Proteina'] %}
+                            <option value="{{ sub_protein['id'] }}">
+                                {{ sub_protein['name'] }}
+                            </option>
+                        {% endfor %}
+                </select>
+                <select id="food{{i}}" name="protein_food_select{{i}}" class="food_select base_words input-base" data-foodmethod="method{{i}}">
+                    <option value="" disabled selected> Escolha.... </option>
+                </select>
+                <select id="method{{i}}" name="protein_food_select{{i}}" class="method_select base_words input-base"  >
+                    <option value="" disabled selected> Metodo.... </option>
+                </select>
+            </div>
+            {% endfor %}
+
+            {% for i in range(2) %}
+            <div class="background_pair background">
+                    <label for="sub_group{{ i }}" class="group_style">Carboidrato {{ i + 1 }}</label>
+
+                <select id="sub_carbo{{ i }}" name="sub_group{{ i }}" class=" subgroup_select base_words input-base" data-foodtarget="food_carbo{{i}}">
+                    <option value="" disabled selected>Escolha....</option>
+                        {% for sub_group in groups_subgroups['Carboidratos'] %}
+                            <option value="{{ sub_group['id'] }}">
+                                {{ sub_group['name'] }}
+                            </option>
+                        {% endfor %}
+                </select>
+                <select id="food_carbo{{i}}" name="carbo_food_select{{i}}" class=" food_select base_words input-base" data-foodmethod="method_carbo{{i}}">
+                    <option value="" disabled selected> Escolha.... </option>
+                </select>
+                <select id="method_carbo{{i}}" name="protein_food_select{{i}}" class="method_select base_words input-base"  >
+                    <option value="" disabled selected> Metodo.... </option>
+                </select>
+            </div>
+            {% endfor %}
+     
+            {% for i in range(2) %}
+            <div class="background_unpaired background">
+                    <label for="sub_group{{ i }}" class="group_style">Leguminosas {{ i + 1 }}</label>
+
+                <select id="sub_legum{{ i }}" name="sub_group{{ i }}" class=" subgroup_select base_words input-base" data-foodtarget="food_legumes{{i}}">
+                    <option value="" disabled selected>Escolha....</option>
+                        {% for sub_group in groups_subgroups['Leguminosas'] %}
+                            <option value="{{ sub_group['id'] }}">
+                                {{ sub_group['name'] }}
+                            </option>
+                        {% endfor %}
+                </select>
+                <select id="food_legumes{{i}}" name="legumin_food_select{{i}}" class="food_select base_words input-base" data-foodmethod="method_legumes{{i}}">
+                    <option value="" disabled selected> Escolha.... </option>
+                </select>
+                <select id="method_legumes{{i}}" name="protein_food_select{{i}}" class="method_select base_words input-base"  >
+                    <option value="" disabled selected> Metodo.... </option>
+                </select>
+            </div>
+            {% endfor %}
+            
+
+            {% for i in range(2) %}
+            <div class="background_pair background">
+                    <label for="sub_group{{ i }}" class="group_style"> Vegetais / Legumes {{ i + 1 }}</label>
+
+                <select id="sub_vege{{ i }}" name="sub_group{{ i }}" class=" subgroup_select base_words input-base" data-foodtarget="food_vege{{i}}">
+                    <option value="" disabled selected>Escolha....</option>
+                        {% for sub_group in groups_subgroups['Vegetais_e_Saladas'] %}
+                            <option value="{{ sub_group['id'] }}">
+                                {{ sub_group['name'] }}
+                            </option>
+                        {% endfor %}
+                </select>
+                <select id="food_vege{{i}}" name="vege_food_select{{i}}" class=" base_words input-base food_select" data-foodmethod="method_vege{{i}}">
+                    <option value="" disabled selected> Escolha.... </option>
+                </select>
+                <select id="method_vege{{i}}" name="protein_food_select{{i}}" class="method_select base_words input-base"  >
+                    <option value="" disabled selected> Metodo.... </option>
+                </select>
+            </div>
+            {% endfor %}
+            
+
+            {% for i in range(2) %}
+            <div class="background_unpaired background">
+                    <label for="sub_group{{ i }}" class="group_style">Complementos {{ i + 1 }}</label>
+
+                <select id="sub_comple{{ i }}" name="sub_group{{ i }}" class=" subgroup_select base_words input-base" data-foodtarget="food_comple{{i}}">
+                    <option value="" disabled selected>Escolha....</option>
+                        {% for sub_group in groups_subgroups['Complementos_e_Espalhaveis'] %}
+                            <option value="{{ sub_group['id'] }}">
+                                {{ sub_group['name'] }}
+                            </option>
+                        {% endfor %}
+                </select>
+                <select id="food_comple{{i}}" name="comple_food_select{{i}}" class=" base_words input-base food_select" data-foodmethod="method_comple{{i}}">
+                    <option value="" disabled selected> Escolha.... </option>
+                </select>
+                <select id="method_comple{{i}}" name="protein_food_select{{i}}" class="method_select base_words input-base"  >
+                    <option value="" disabled selected> Metodo.... </option>
+                </select>
+            </div>
+            {% endfor %}
+            
+
+            {% for i in range(2) %}
+            <div class="background_pair background">
+                    <label for="sub_group{{ i }}" class="group_style"> Bebidas {{ i + 1 }}</label>
+
+                <select id="sub_bebidas{{ i }}" name="sub_group{{ i }}" class=" subgroup_select base_words input-base" data-foodtarget="food_Bebidas{{i}}">
+                    <option value="" disabled selected>Escolha....</option>
+                        {% for sub_group in groups_subgroups['Bebidas'] %}
+                            <option value="{{ sub_group['id'] }}">
+                                {{ sub_group['name'] }}
+                            </option>
+                        {% endfor %}
+                </select>
+                <select id="food_Bebidas{{i}}" name="drink_food_select{{i}}" class=" base_words input-base food_select" data-foodmethod="method_drink{{i}}" >
+                    <option value="" disabled selected> Escolha.... </option>
+                </select>
+                <select id="method_drink{{i}}" name="protein_food_select{{i}}" class="method_select base_words input-base"  >
+                    <option value="" disabled selected> Metodo.... </option>
+                </select>
+            </div>
+            {% endfor %}
+
+            {% for i in range(2) %}
+            <div class="background_unpaired background">
+                    <label for="sub_group{{ i }}" class="group_style">Frutas {{ i + 1 }}</label>
+
+                <select id="sub_fruity{{ i }}" name="sub_group{{ i }}" class=" subgroup_select base_words input-base" data-foodtarget="food_Frutas{{i}}">
+                    <option value="" disabled selected>Escolha....</option>
+                        {% for sub_group in groups_subgroups['Frutas'] %}
+                            <option value="{{ sub_group['id'] }}">
+                                {{ sub_group['name'] }}
+                            </option>
+                        {% endfor %}
+                </select>
+                <select id="food_Frutas{{i}}" name="fruity_food_select{{i}}" class=" base_words input-base food_select" data-foodmethod="method_fruta{{i}}" >
+                    <option value="" disabled selected> Escolha.... </option>
+                </select>
+                <select id="method_fruta{{i}}" name="protein_food_select{{i}}" class="method_select base_words input-base"  >
+                    <option value="" disabled selected> Metodo.... </option>
+                </select>
+            </div>
+            {% endfor %}
+            
+            {% for i in range(2) %}
+            <div class="background_pair background">
+                    <label for="sub_group{{ i }}" class="group_style"> Doces {{ i + 1 }}</label>
+
+                <select id="sub_candy{{ i }}" name="sub_group{{ i }}" class=" subgroup_select base_words input-base" data-foodtarget="food_candy{{i}}">
+                    <option value="" disabled selected>Escolha....</option>
+                        {% for sub_group in groups_subgroups['Doces'] %}
+                            <option value="{{ sub_group['id'] }}">
+                                {{ sub_group['name'] }}
+                            </option>
+                        {% endfor %}
+                </select>
+                <select id="food_candy{{i}}" name="candy_food_select{{i}}" class=" base_words input-base food_select" data-foodmethod="method_candy{{i}}" >
+                    <option value="" disabled selected> Escolha.... </option>
+                </select>
+                <select id="method_candy{{i}}" name="protein_food_select{{i}}" class="method_select base_words input-base"  >
+                    <option value="" disabled selected> Metodo.... </option>
+                </select>
+            </div>
+            </div>
+            {% endfor %}
+           
+            {% for i in range(2) %}
+            <div class="background_unpaired background">
+                    <label for="sub_group{{ i }}" class="group_style">Laticinios e frios {{ i + 1 }}</label>
+
+                <select id="sub_dairy{{ i }}" name="sub_group{{ i }}" class=" subgroup_select base_words input-base" data-foodtarget="food_dairy{{i}}">
+                    <option value="" disabled selected>Escolha....</option>
+                        {% for sub_group in groups_subgroups['Laticinios_frios_e_derivados'] %}
+                            <option value="{{ sub_group['id'] }}">
+                                {{ sub_group['name'] }}
+                            </option>
+                        {% endfor %}
+                </select>
+                <select id="food_dairy{{i}}" name="dairy_food_select{{i}}" class=" base_words input-base food_select" data-foodmethod="method_dairy{{i}}" >
+                    <option value="" disabled selected> Escolha.... </option>
+                </select>
+                <select id="method_dairy{{i}}" name="protein_food_select{{i}}" class="method_select base_words input-base"  >
+                    <option value="" disabled selected> Metodo.... </option>
+                </select>
+            </div>
+            {% endfor %}
+            
+        <button id="bottomsave" type="submit" class="bottom-save">
+            {% if saved %}
+            Salvo
+            {%else%}
+            Salvar
+            {% endif %}
+        </button>  
+
+        <button id="bottom_logout" type="button" class="bottom_logout"> Sair</button>
+
+        <button id="bottomBack" type="button" onclick="history.back()" class="bottom_back"> Voltar </button>
+    </form>
+
+    {% if login_error %}
+    <p>Usuario nao encontrado ou senha incorreta.</p>
+    {% endif %}
+
+    
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // ------------ bottom save ----------------
+            const bottomsave= document.getElementById("bottomsave");
+            
+            //
+            const foods = JSON.parse('{{ foods | tojson | safe }}');
+            const id_food_methods = JSON.parse('{{methods_food | tojson | safe }}')
+
+            // ----------- subgroups -> foods -----------
+            
+            const subgroups = document.querySelectorAll(".subgroup_select");
+            
+            subgroups.forEach(function(select){
+                select.addEventListener("change", function(){
+                    const subgroup_id = this.value;
+                    const target_id = this.dataset.foodtarget;
+                    const food_select = document.getElementById(target_id);
+                    console.log("subgroup_id:", subgroup_id);
+                    console.log("target_id:", target_id);
+                    console.log("food_select:", food_select);
+                    if (!food_select) {
+                console.log("Select de alimento não encontrado para:", target_id);
+                return;
+            }
+
+                    food_select.innerHTML = '<option value="" disabled selected>Escolha....</option>';
+                    if (!subgroup_id || !foods[subgroup_id]) return;
+                    foods[subgroup_id].forEach(function(food){
+                        const option = document.createElement("option");
+                        option.value = food.id;
+                        option.textContent = food.name;
+                        food_select.appendChild(option);
+                    });
+                });
+            });
+
+            // ---------------- foods -> methods ----------
+
+            const food_selects = document.querySelectorAll(".food_select")
+
+                food_selects.forEach(function(select){
+                    select.addEventListener("change", function(){
+                    const food_id = this.value;
+                    const target_method = this.dataset.foodmethod;
+                    const method_select = document.getElementById(target_method)
+                    method_select.innerHTML = '<option value="" disabled selected>Metodo....</option>';
+                    if (!id_food_methods[food_id]) return;
+                    id_food_methods[food_id].forEach(function(method){
+                        const option = document.createElement("option");
+                        option.value = method.id;
+                        option.textContent = method.name;
+                        method_select.appendChild(option)
+                    });
+                });
+            });
+    });
+    </script>
+
+</body>
+</html>

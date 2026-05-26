@@ -1,0 +1,520 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    position: relative;
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    margin: 0;
+}
+
+header{
+    position: relative;
+    width: 100%;
+    min-height: 120px;
+}
+
+.header-content{
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    width: 100%;
+}
+
+.title{
+    text-align: center;
+    justify-self: center;
+}
+
+.title h1,
+.title h2{
+    margin: 0;
+    transform: translateY(+50%);
+}
+
+.text{
+    font-size: clamp(10px, 1vw, 20px);
+}
+
+.text_long{
+    font-size: clamp(10px, 2vw, 20px);
+}
+
+.logo{
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.logo_img{
+    width: 160px;
+    height: auto;
+    display: block;
+}
+.bg-home{
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.bg-home::before{
+    content: '';
+    display: block;
+    position: absolute;
+    background-image: linear-gradient(to bottom, rgba(30, 91, 79, 0.527), rgba(14, 43, 37, 0.568)), url("./imagem/favorita.webp");
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-size: cover;
+}
+
+.container{
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(280px, 20vw, 380px));
+
+    gap: 30px;
+
+    justify-content: center;
+    margin-top: 100px;
+}
+
+/* card estilo polaroid */
+.card, 
+.card_perfil,
+.card_pc{
+    background: white;
+
+    padding: 20px 20px 100px 20px;
+
+    border-radius: 6px;
+
+    position: relative;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
+    transition: transform 0.15s;
+    
+}
+.card:hover, 
+.card_perfil:hover,
+.card_min:hover,
+.card_pc:hover{
+    transform: scale(1.03);
+    background: rgba(168, 154, 154, 0.911);
+    border: 1px solid #5a3425;
+}
+
+.card img{
+    width: 100%;
+
+    height: 280px;
+
+    object-fit: cover;
+
+    display: block;
+    border: 1px solid #727070;
+    transition: transform 0.15s ease;
+}
+
+/* botão */
+.bottom{
+    position: absolute;
+
+    bottom: 15px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 80%;
+
+    height: 50px;
+
+    border-radius: 12px;
+
+    border: 2px solid #5a3425;
+
+    background: white;
+
+    font-size: 24px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.bottom_perfil {
+    position: absolute;
+
+    bottom: 7px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 80%;
+
+    height: 30px;
+
+    border-radius: 12px;
+
+    border: 2px solid #5a3425;
+
+    background: white;
+
+    font-size: 24px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.card_perfil{
+    width: 400px;
+
+    height: 200px;
+
+    object-fit: cover;
+    padding: 8px;
+
+    border: 1px solid #727070;
+
+    top: +4px;
+
+    right: +0px;
+    
+}
+
+.grocery{
+        grid-row: 5;
+    }
+.card_perfil img{
+    width: 100%;
+
+    height: 150px;
+
+    object-fit: cover;
+
+    border: 1px solid #727070;
+}
+
+.logout{
+
+    width: 300px;
+
+    justify-self: center;
+
+    position: static;
+
+    left: auto;
+
+    transform: none;
+}
+
+.grocery{
+
+    width: 300px;
+
+    justify-self: center;
+
+    position: static;
+
+    left: auto;
+
+    transform: none;
+}
+
+.bottom:hover{
+    background: rgba(109, 99, 99, 0.781);
+}
+.logo_img:hover{
+    transform: scale(1.2);
+}
+
+
+/* ====================
+    MENOR QUE 900px
+==================== */
+@media(max-width:830px){
+    .card_perfil_pc{
+        display: none;
+    }
+
+    .header-content{
+    grid-template-columns: 1fr auto 1fr;
+    transition: transform 0.5s;
+    }
+    .container{
+        grid-template-columns: repeat(2, minmax(180px, 250px));
+        grid-template-rows: repeat(4, minmax(200px, 260px));
+        transition: transform 0.5s;
+        gap: 20px;
+
+        justify-content: center;
+        margin-top: 100px;
+    }
+    .logout{
+        grid-column: 1/3;
+        transition: transform 0.5s;
+    }
+
+    .grocery{
+        display: none;
+    }
+    .card{
+        padding: 10px 10px 50px 10px;
+        transition: transform 0.5s;
+    }
+    .card img{
+        width: 100%;
+
+        height: 200px;
+
+        object-fit: cover;
+
+        display: block;
+        border: 1px solid #727070;
+        transition: transform 0.5s;
+    }
+
+    .card_min img{
+        width: 100%;
+
+        height: 200px;
+
+        object-fit: cover;
+
+        display: block;
+        border: 1px solid #727070;
+        transition: transform 0.5s;
+    }
+    .text{
+        font-size: clamp(5px, 2vw, 16px);
+        transition: transform 0.5s;
+    }
+
+    .text_long{
+        font-size: clamp(5px, 2vw, 16px);
+        transition: transform 0.5s;
+    }
+    .card_min{
+        background: white;
+
+        padding: 20px 20px 100px 20px;
+
+        border-radius: 6px;
+
+        position: relative;
+
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
+        transition: transform 0.8s;
+        padding: 10px 10px 50px 10px;
+    
+    }
+
+
+    .side1, .side3{
+        transform: rotate(-2deg);
+    }
+
+    .side2, .side4{
+        transform: rotate(+2deg);
+    }
+
+    .card_perfil{
+        width: 180px;
+        height: 180px;
+
+        border-radius: 50%; /* vira círculo */
+        overflow: hidden;   /* corta a imagem no formato do círculo */
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: white;
+
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        transition: transform 0.8s ease;
+    
+    }
+
+    .card_perfil img {
+        width: clamp(280px, 6vw, 300px);
+        height: clamp(280px, 6vw, 300px);
+        object-fit: cover; /* preenche sem distorcer */
+        object-position: 60% 10%; /* sobe mais */
+        transition: transform 0.5s;
+    }
+
+    .bottom_perfil{
+        display: none;
+    }
+
+
+}
+
+@media (min-width: 831px) and (max-width: 1500px){
+    .container{
+        grid-template-columns: repeat(3, clamp(150px, 300px, 400px));
+        transition: transform 0.5s;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 100px;
+    }
+
+    .card{
+        padding: 10px 10px 80px 10px;
+        transition: transform 0.5s;
+    }
+
+    .card img{
+        width: clamp(130px, 280px, 320px);
+        height: clamp(230px, 300px, 330px);
+        object-fit: cover;
+        display: block;
+        border: 1px solid #727070;
+        transition: transform 0.5s;
+    }
+
+    .side1{
+        transform: rotate(-2deg);
+    }
+
+    .side2{
+        transform: rotate(0deg);
+    } 
+    .side3{
+        transform: rotate(+2deg);
+    }
+
+    .header-content{
+    grid-template-columns: auto auto auto;
+    transition: transform 0.15s;
+    }
+    .card_perfil_pc{
+        display: none;
+
+    }
+    .card_min{
+        display: none;
+    }
+    .logout{
+        grid-column: 2/3;
+        transition: transform 0.5s;
+    }
+    .card_perfil{
+        width: clamp(150px, 16vw, 300px);
+        height: auto;
+
+        object-fit: cover;
+        padding: 8px;
+
+        border: 1px solid #727070;
+
+        top: +4px;
+
+        right: +0px;
+        transition: transform 0.5s;
+    }
+    .grocery{
+        grid-column: 2/3;;
+        transition: transform 0.5s;
+    }
+}
+
+/* =========================
+   DESKTOP GRANDE >1541
+========================= */
+
+@media (min-width: 1501px){
+    .card_min{
+        display: none;
+    }
+    .header-content{
+    grid-template-columns: auto auto auto;
+    } 
+    .card_perfil{
+        display: none;
+    }
+
+    .title{
+        grid-column: 2
+    }
+
+    .container{
+        grid-template-columns:
+            repeat(4, clamp(220px, 22vw, 430px));
+
+        gap: 10px;
+    }
+    .logout{
+        grid-area: sair;
+
+        width: clamp(220px, 20vw, 300px);
+
+        justify-self: center;
+    }
+
+    .card_pc{
+        background: white;
+
+        padding: 20px 20px 100px 20px;
+
+        border-radius: 6px;
+
+        position: relative;
+
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
+        transition: transform 0.3s;
+    
+    }
+    .card_pc img,
+    .card img{
+    width: 100%;
+
+    height: 280px;
+
+    object-fit: cover;
+    height: clamp(280px, 20vw, 520px);
+    display: block;
+    border: 1px solid #727070;
+    }
+
+
+    .side0{
+        transform: rotate(-2deg);
+    }
+    .side3{
+        transform: rotate(+2deg);
+    }
+
+    .card{
+        width: 100%;
+    }
+
+
+
+    .logout{
+        grid-column: 1 / -1;
+
+        justify-self: center;
+    }
+    .text{
+        font-size: clamp(14px, 1.5vw, 25px);
+    }
+    .grocery{
+        grid-column: 2/4;;
+        transition: transform 0.5s;
+    }
+}

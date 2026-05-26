@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"/>    
+        
+    <link rel="stylesheet" href="{{url_for('static', filename='temporary_choice.css')}}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <link
+        rel="preload"
+        as="image"
+        href="{{ url_for('static', filename='imagem/bg_perfil.webp') }}">
+    <title> Perfil Nutriplanner </title>
+</head>
+<body>
+<div class="bg-home">
+    <form
+        id="form-perfil"
+        action="{{ url_for('temporary_choices') }}"
+        method="POST"
+    >
+
+        <header>
+            <nav class="header-content">
+                <div class="title">
+                    <h1>Planejamento {{ name }}</h1>
+                </div>
+            </nav>
+        </header>
+
+        <div class="container">
+
+            <div class="container_lef">
+                <!-- LOGO MENU -->
+                <a href="{{ url_for('menu') }}" class="logo_perfil">
+                    <img
+                        src="{{ url_for('static', filename='imagem/menu_logo.png') }}"
+                        alt="perfil_logo"
+                        class="perfil_img"
+                    />
+                </a>
+                <!-- LOGO BACK -->
+                <a href="{{ url_for('planner_meals') }}" class="logo_perfil">
+                    <img
+                        src="{{ url_for('static', filename='imagem/back.png') }}"
+                        alt="perfil_logo"
+                        class="perfil_img"
+                        />
+                </a>
+
+            </div>
+            <!-- CONTEUDO CENTRAL -->
+            <div class="container-grid">
+
+                <!-- SELECT REFEICAO -->
+                <div class="meal-select-row">
+
+                    <label
+                        for="choice_meal"
+                        class="group_style base_words"
+                    >
+                        Refeicao
+                    </label>
+
+                    <select
+                        id="choice_meal"
+                        name="choice_meal"
+                        class="input-base choice_meal"
+                        required
+                    >
+                        <option value="" disabled selected>
+                            Escolha....
+                        </option>
+
+                        {% for meal_id, meal_name in ordered.items() %}
+                            <option value="{{ meal_id }}">
+                                {{ meal_name }}
+                            </option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <!-- OPCOES -->
+                {% for choice_id, snack in organize.items() %}
+                    {% for history_meal_id, meal in snack.items() %}
+
+                    <div
+                        class="meal-option"
+                        data-meal-group="{{ choice_id }}"
+                        style="display: none;"
+                    >
+
+                        <div class="quantity">
+
+                            <input
+                                type="number"
+                                name="{{ meal['history_meal_id'] }}"
+                                class="box input-base"
+                                min="0"
+                            >
+
+                        </div>
+
+                        <div class="options">
+
+                            {% for food in meal['foods'] %}
+                                {{ food['name'] }}
+                                {% if not loop.last %}, {% endif %}
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+                {% endfor %}
+
+                <!-- BOTAO -->
+                <button
+                    id="bottomNext"
+                    type="submit"
+                    class="bottom_next"
+                >
+                    Inserir Quantidades
+                </button>
+
+            </div>
+
+            <!-- LOGO -->
+            <div class="logo">
+
+                <img
+                    src="{{ url_for('static', filename='imagem/logo_semfundo.png') }}"
+                    alt="logo"
+                    class="logo_img"
+                />
+
+            </div>
+
+        </div>
+
+    </form>
+</div>
+     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        const bottomsave= document.getElementById("bottomsave")
+
+        // ----------- bottom choice and dictionary list --------
+
+            const select_meal = document.getElementById("choice_meal")
+            const orderedMeals = JSON.parse('{{ ordered | tojson | safe }}');
+            const all = document.querySelectorAll(".meal-option");
+            console.log("orderedMeals ", orderedMeals)
+
+            // ----------- subgroups -> foods -----------
+            
+            function updateMeals(){
+                const selected = String(select_meal.value);
+                
+                all.forEach(el => {
+                    const group =String(el.dataset.mealGroup);
+                    if (group == selected){
+                        el.style.display = "flex";
+                    } else {
+                        el.style.display = "none";
+                    }
+                });
+            };
+            updateMeals();
+            select_meal.addEventListener("change", updateMeals);
+        })
+     </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"/>    
+        
+    <link rel="stylesheet" href="{{url_for('static', filename='show_meals.css')}}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    
+    <title> Alterar Nutriplanner </title>
+<body>
+<div class="bg-home" >
+    <form id="form-perfil" action="{{ url_for('show_meals') }}" method="POST">
+        <div class="floating-left">
+            <a href="{{ url_for('temporary_choices') }}">
+                <img src="{{ url_for('static', filename='imagem/planner_logo.png') }}"
+                    class="floating-img">
+            </a>
+        </div>
+
+        <header >
+            <nav class="header-content">          
+                <div class="title">
+                    <h1> Planejamento {{ name }}</h1>
+                </div>
+            </nav>
+        </header>
+
+        <div class="floating-right">
+            <a href="{{ url_for('menu') }}">
+                <img src="{{ url_for('static', filename='imagem/menu_logo.png') }}"
+                    class="floating-img">
+            </a>
+        </div>
+
+
+    <section class="meals-grid">
+
+        {% for meal in meals_view %}
+        <article class="meal-card">
+
+            <h2>
+                {{ meal.meal_name }}
+            </h2>
+
+            <table class="meal-table">
+
+                <thead>
+                    <tr>
+                        <th>Alimento</th>
+                        <th>Pronto(g)</th>
+                        <th>Kcal</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for item in meal.item %}
+                    <tr>
+
+                        <td>
+                            {{ item.food_name }}
+                        </td>
+
+                        <td>
+                            {% if item.grama_pronto is none %}
+                                À vontade
+                            {% else %}
+                                {{ '%.2f'|format(item.grama_pronto) }}
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ '%.2f'|format(item.kcal_item) }}
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            <div class="meal-footer">
+
+                <p>
+                    Quantidade:
+                    {{ meal.quantity }}
+                </p>
+
+                <p>
+                    Total kcal:
+                    {{ '%.2f'|format(meal.total_kcal) }}
+                </p>
+
+            </div>
+
+        </article>
+        {% endfor %}
+
+    </section>
+</body>
+</html>

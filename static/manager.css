@@ -1,0 +1,258 @@
+@charset "UTF-8";
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background-color: rgba(46, 44, 44, 0.397);
+  margin: 0;
+  font-family: sans-serif;
+  color: #201010;
+}
+
+header {
+  width: 100%;
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.title {
+  text-align: center;
+  color: rgb(189, 129, 45);
+  font-family: "Libre Baskerville", serif;
+  font-size: clamp(15px, 3vw, 25px);
+}
+
+.title h1 {
+  text-align: center;
+  margin: 0;
+  transform: translateY(40);
+  text-shadow: 4px 4px 6px rgba(56, 14, 14, 0.842), 4px 4px 20px rgba(2, 32, 26, 0.966);
+}
+
+.bg-home {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.bg-home::before {
+  content: "";
+  inset: 0;
+  position: fixed;
+  background-image: linear-gradient(to bottom, rgba(28, 107, 91, 0.473), rgba(20, 49, 43, 0.404)), url("./imagem/bg_perfil.webp");
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bottom:hover {
+  background: rgba(109, 99, 99, 0.781);
+}
+
+/* LOGO PERFIL E LOGO NUTRIPLANNER */
+.floating-left,
+.floating-right {
+  position: fixed;
+  z-index: 1000;
+}
+
+.floating-left {
+  top: -50px;
+  left: -80px;
+}
+
+.floating-right {
+  top: -20px;
+  right: -20px;
+}
+
+.floating-img {
+  width: 450px;
+  height: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.floating-logo {
+  width: 350px;
+  height: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.floating-img:hover,
+.floating-logo:hover {
+  transform: scale(1.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 4px 4px 6px rgba(56, 14, 14, 0.842), 4px 4px 20px rgba(2, 32, 26, 0.966);
+}
+
+.logo_img {
+  max-width: 300px;
+  width: 100%;
+}
+
+.perfil_img {
+  max-width: 400px;
+  width: 100%;
+}
+
+.perfil_img:hover,
+.logo_img:hover {
+  transform: scale(1.25);
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr minmax(300px, 850px) 1fr;
+  width: 100%;
+  min-height: auto;
+  padding: 20px 0 20px 0;
+  padding-top: 0px; /* espaço em cima */
+  padding-bottom: 40px;
+  -moz-column-gap: 8px;
+       column-gap: 8px;
+  row-gap: 8px;
+}
+
+.container-grid {
+  display: flex;
+  flex-direction: column;
+  grid-column: 2;
+  width: 100%;
+  max-width: 900px;
+  gap: 10px;
+  padding: clamp(10px, 2vw, 30px);
+  background: rgba(45, 114, 133, 0.89);
+  border: 1px solid rgb(12, 41, 39);
+  border-radius: 8px;
+}
+
+.background {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 2fr 1fr;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+/* cores alternadas */
+.background_pair {
+  background-color: rgba(50, 93, 128, 0.274);
+}
+
+.background_unpaired {
+  background-color: rgba(54, 54, 95, 0.274);
+}
+
+/* ---------- titulos ---------- */
+.table_title {
+  font-size: clamp(12px, 2vw, 18px);
+  font-weight: bold;
+  text-align: center;
+}
+
+/* ---------- grupo ---------- */
+.group_style {
+  font-size: clamp(12px, 2vw, 16px);
+  font-weight: bold;
+  color: rgb(24, 24, 63);
+  text-align: center;
+}
+
+.choice_meal {
+  grid-column: 3/5;
+}
+
+.error-message {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: rgba(255, 0, 0, 0.15);
+  border: 1px solid rgba(255, 0, 0, 0.4);
+  color: rgb(120, 0, 0);
+  font-weight: bold;
+  text-align: center;
+}
+
+.save-message {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: rgba(0, 255, 0, 0.15);
+  border: 1px solid rgba(0, 255, 136, 0.4);
+  color: rgb(0, 120, 46);
+  font-weight: bold;
+  text-align: center;
+}
+
+/* ---------- selects ---------- */
+.input-base {
+  width: 100%;
+  padding: 8px;
+  background-color: rgba(210, 210, 214, 0.274);
+  color: rgb(0, 0, 0);
+  border: 1px solid black;
+  border-radius: 4px;
+  font-size: clamp(10px, 2vw, 16px);
+}
+
+/* ---------- texto ---------- */
+.base_words {
+  font-size: clamp(5px, 2vw, 15px);
+}
+
+/* ---------- refeicao ---------- */
+.meal {
+  font-size: clamp(14px, 2vw, 18px);
+  font-weight: bold;
+}
+
+/* ---------- botoes ---------- */
+.bottom-save,
+.bottom_back,
+.bottom_logout {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  color: black;
+  border: 1px solid #333;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: clamp(12px, 2vw, 18px);
+  transition: 0.2s;
+}
+
+.bottom-save:hover,
+.bottom_back:hover,
+.bottom_logout:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* ---------- JS ---------- */
+.subgroup_select,
+.method_select,
+.food_select {
+  color: #000;
+}/*# sourceMappingURL=manager.css.map */

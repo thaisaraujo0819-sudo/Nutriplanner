@@ -1,0 +1,81 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Fundo branco -->
+  <rect width="1200" height="800" fill="white"/>
+
+  <!-- Emblema -->
+  <circle cx="600" cy="210" r="120" stroke="#2E6F64" stroke-width="5" fill="none"/>
+  <circle cx="600" cy="210" r="105" stroke="#2E6F64" stroke-width="3" fill="none" opacity="0.8"/>
+
+  <!-- Parte superior -->
+  <line x1="560" y1="95" x2="560" y2="70" stroke="#2E6F64" stroke-width="5" stroke-linecap="round"/>
+  <line x1="640" y1="95" x2="640" y2="70" stroke="#2E6F64" stroke-width="5" stroke-linecap="round"/>
+  <line x1="580" y1="80" x2="620" y2="80" stroke="#2E6F64" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Pontos -->
+  <circle cx="560" cy="130" r="5" fill="#2E6F64"/>
+  <circle cx="590" cy="130" r="5" fill="#2E6F64"/>
+  <circle cx="620" cy="130" r="5" fill="#2E6F64"/>
+  <circle cx="650" cy="130" r="5" fill="#2E6F64"/>
+
+  <circle cx="560" cy="155" r="5" fill="#2E6F64" opacity="0.7"/>
+  <circle cx="590" cy="155" r="5" fill="#2E6F64" opacity="0.7"/>
+  <circle cx="620" cy="155" r="5" fill="#2E6F64" opacity="0.7"/>
+  <circle cx="650" cy="155" r="5" fill="#2E6F64" opacity="0.7"/>
+
+  <!-- Folhas -->
+  <path d="M575 300C530 260 535 215 575 185C610 215 610 265 575 300Z"
+        stroke="#2E6F64"
+        stroke-width="4"
+        fill="none"/>
+
+  <path d="M605 315C650 240 705 205 735 175C740 245 695 315 605 315Z"
+        stroke="#2E6F64"
+        stroke-width="4"
+        fill="none"/>
+
+  <!-- Texto principal -->
+  <text x="600"
+        y="500"
+        text-anchor="middle"
+        fill="#2E6F64"
+        font-size="120"
+        font-family="Georgia, serif"
+        letter-spacing="2">
+    Nutriplanner
+  </text>
+
+  <!-- Linhas decorativas -->
+  <line x1="350" y1="580" x2="520" y2="580"
+        stroke="#2E6F64"
+        stroke-width="2"
+        opacity="0.7"/>
+
+  <line x1="680" y1="580" x2="850" y2="580"
+        stroke="#2E6F64"
+        stroke-width="2"
+        opacity="0.7"/>
+
+  <!-- Folha pequena -->
+  <path d="M590 595C600 575 615 570 625 560C627 580 615 600 590 595Z"
+        stroke="#2E6F64"
+        stroke-width="2"
+        fill="none"/>
+
+  <path d="M610 595C620 580 635 570 645 565C645 590 630 605 610 595Z"
+        stroke="#2E6F64"
+        stroke-width="2"
+        fill="none"/>
+
+  <!-- Slogan -->
+  <text x="600"
+        y="640"
+        text-anchor="middle"
+        fill="#2E6F64"
+        font-size="28"
+        font-family="Arial, sans-serif"
+        letter-spacing="6">
+    PLANEJE HOJE, TRANSFORME AMANHÃ
+  </text>
+
+</svg>

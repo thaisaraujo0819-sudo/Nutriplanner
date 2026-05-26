@@ -1,20 +1,23 @@
 import os
-
-
+import mysql.connector
+from dotenv import load_dotenv
 from flask import Flask, request, render_template, redirect, url_for, session
 from flask_mail import Mail, Message
-import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+import calculos
+from datetime import date, datetime
+import json
+from mysql.connector import IntegrityError
 
 
-
+load_dotenv()
 conn = mysql.connector.connect(
-    host = "localhost",
-    user = "root",
-    password = "Batata2028",
-    database = "nutriplanner"
+    host = os.getenv("DB_HOST"),
+    user = os.getenv("DB_USER"),
+    password = os.getenv("DB_PASSWORD"),
+    database = os.getenv("DB_NAME"),
+    port = int(os.getenv("DB_PORT"))
 )
 
 cursor = conn.cursor()
@@ -41,7 +44,17 @@ meal_translations = {
     "afternoon snack": "Lanche da tarde",
     "dinner": "Jantar"
 }
-
+meal_map = {
+    1: "Café da manhã",
+    2: "Lanche da manhã",
+    3: "Almoço",
+    4: "Lanche da tarde",
+    5: "Jantar"
+}
+@app.route("/nutriplanner",methods=["GET", "POST"])
+def nutriplanner():
+    return render_template("nutriplanner.html")
+# ----------------- LOGIN -----------------------
 @app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == "GET":
@@ -50,23 +63,23 @@ def login():
     email = request.form.get("gmail")
     password = request.form.get("password")
 
-    print("Email recebido:", email)
-    print("Senha recebido:", password)
 
     cursor.execute("SELECT id, pass_hash FROM user_login WHERE email = %s", (email,))
     row = cursor.fetchone()
+    # ----------- if not exist -----------
     if not row:
         return render_template("login.html", login_error=True)
 
     user_id, pass_hash = row
-
+    # ----------- if not check with the pass_hash -----------
     if not check_password_hash (pass_hash, password):
         return render_template("login.html", login_error = True)
     
     session["user_id"] = user_id
     
-    return redirect(url_for("perfil", user_id=user_id))
+    return redirect(url_for("menu", user_id=user_id))
 
+#------------------ REGISTER -------------------
 @app.route("/register", methods=["GET","POST"])
 def register():
     if request.method == "GET":
@@ -89,30 +102,45 @@ def register():
 
     session["user_id"] = user_login_id
 
-    return redirect(url_for("perfil"))
+    return redirect(url_for("menu"))
 
+# -------- FUNCTION OF STRING TO INT --------
 def to_int_or_none(value):
     if value == "":
         return None
     return float(value)
 
-@app.route("/perfil>", methods= ["GET", "POST"])
+@app.route("/menu/",methods= ["GET", "POST"])
+def menu():
+    user_id = session.get("user_id")
+    print("user_id", user_id)
+    cursor.execute("SELECT name FROM user_profile WHERE user_id = %s",(user_id,))
+    primary_name = cursor.fetchone()[0]
+    name = primary_name.split()[0]
+    print("name", name)
+    session["name"] = name
+    return render_template("menu.html", name=name)
+
+#------------- PERFIL ---------------
+@app.route("/perfil/", methods= ["GET", "POST"])
 def perfil():
     user_id = session.get("user_id")
-
+    saved = request.args.get("saved") == "1"
     cursor.execute("SELECT email FROM user_login WHERE id = %s",(user_id,))
     row = cursor.fetchone()
     gmail = row[0] 
 
     if request.method == "GET":
-        saved = request.args.get("saved") == "1"
-
+        #----------- IF PERFIL ALRED EXIST RETURN VALUES ------------------
         cursor.execute("SELECT name, birthday, height, weight, gender,goal_id, goal_pace_id, " \
         "exercise_id, principal_meal_id,eats_sweet_daily, vegetable, legumes "\
         "FROM user_profile "\
         "WHERE user_id = %s ", (user_id,))
 
         profile_row = cursor.fetchone()
+        primary_name = profile_row[0]
+        name = primary_name.split()[0].capitalize()
+        print("name",name)
                 
         if profile_row:
 
@@ -140,7 +168,7 @@ def perfil():
                 "legumes": profile_row[11],
                 "meals" : meal_ids,
                 }
-                    
+        #----------- ELSE DON'T EXIST RETURN EMPTY ---------            
         else:
             profile_information = {
                 "name": "",
@@ -162,10 +190,12 @@ def perfil():
             "perfil.html",
             gmail=gmail,
             perfil=profile_information,
-            saved=saved
+            saved=saved,
+            name=name
             )
     
     if request.method == "POST":
+        # --------- SEND INFORMATION TO DATABANK ----------
         cursor.execute("SELECT user_id FROM user_profile WHERE user_id = %s", (user_id,))
         row = cursor.fetchone()
 
@@ -183,6 +213,7 @@ def perfil():
         legumes = to_int_or_none(request.form.get("legumes"))
         meals = request.form.getlist("meals")
 
+        # ---------- IF THE USER IS NEW ---------------
         if not row:
             cursor.execute("" \
             "INSERT INTO user_profile "
@@ -204,6 +235,7 @@ def perfil():
             
             conn.commit()
 
+        # ----------- IF THE USER WANT TO UPDATE ----------
         else: 
             cursor.execute("" \
             "update user_profile "
@@ -235,8 +267,9 @@ def perfil():
                 (user_profile_id, meal))
             conn.commit()
 
-    return redirect(url_for("perfil", saved=1))
-    
+    return redirect(url_for("perfil", saved=1, name=name))
+
+# ----------- CHANGE EMAIL ------------    
 @app.route("/change_login", methods=["GET", "POST"])
 def change_login():
     user_id = session.get("user_id")
@@ -267,7 +300,8 @@ def change_login():
         
     
     return redirect(url_for("change_login", user_id=user_id, saved=1))
-        
+
+# ---------- CHANGE PASSWORD WITH TOKEN -------       
 serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 def generate_token(email):
     return serializer.dumps(email, salt="reset-password")
@@ -303,7 +337,6 @@ def forgot_password():
 
     return "Se o email existir, enviamos o link."
         
-
 @app.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_password(token):
     try:
@@ -334,15 +367,17 @@ def reset_password(token):
     conn.commit()
 
     return "Senha redefinida com sucesso."
-    
+
+# ---------- LOGOUT SITE --------    
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect(url_for("login"))
+    return redirect(url_for("nutriplanner"))
 
-
-@app.route("/planner", methods=["GET", "POST"])
-def planner():
+# --------------- PLANNER FOOD --------
+@app.route("/manager_meals", methods=["GET"])
+def manager_meals():
+    error = request.args.get("error")
     user_id = session.get("user_id")
     cursor = conn.cursor(dictionary=True)
 
@@ -352,33 +387,513 @@ def planner():
     if request.method == "GET":
         saved = request.args.get("saved") == "1"
 
+        #-------------- SELECT THE USER'S MEALS CHOICES ------------
         cursor.execute("SELECT meal.id, meal.meal_name " \
             "FROM user_profile_meal " \
             "INNER JOIN meal ON user_profile_meal.meal_id = meal.id "
             "WHERE user_profile_meal.profile_id = %s", (user_profile_id,))
 
         choice_meal = cursor.fetchall()     
-        cursor.close()
 
         for meals in choice_meal:
             meals["meal_pt"] = meal_translations.get(meals["meal_name"],meals["meal_name"])
 
-            print("meals", meals)
-
-        """ -------------- Protein ------------"""
 
 
-        return render_template("planner.html", choice_meal=choice_meal,saved=saved)
+        # ------------ SELECT THE GROUPS NAMES IN DB --------------
+        cursor.execute("SELECT id, name FROM group_name")
+        groups = cursor.fetchall()
+
+        # --------------- SELECT SUBGROUPS WITH GROUP NAME AND WITHOUT ----------
+        groups_subgroups = {}
+        for row in groups:
+            id_query = row['id']
+            name = row['name']
+            cursor.execute("SELECT id, name " \
+            "FROM subgroup " \
+            "WHERE group_name_id = %s ", (id_query,))
+            groups_subgroups[name] = cursor.fetchall()   
+
+        # ------------ SELECT THE SUBGROUPS NAMES IN DB --------------
+        cursor.execute("SELECT id, name FROM subgroup")
+        subgroups = cursor.fetchall()
+
+        # ------------------ SELECT FOODS WITH SUBGROUP NAME -------------
+        foods = {}
+        for row in subgroups:
+            id_subgroup = row['id']
+            name_food = row['name']
+            cursor.execute("SELECT id, name " \
+            "FROM food " \
+            "WHERE subgroup_id = %s ", (id_subgroup, ))
+            foods[id_subgroup] = cursor.fetchall()
+
+        # ---------------- SELECT FOOD_METHODS id's  ----------------------
+        cursor.execute("SELECT id, food_id, method_id FROM food_method")
+        id_food_method = cursor.fetchall()
+       
+        # ---------------- SELECT FOOD METHODS ----------------------       
+        methods_food = {}
+        
+        for row in id_food_method:
+
+            id_food_methods = row['id']
+            food_id = row['food_id'] 
+            method_id = row['method_id']
+
+            cursor.execute("SELECT id, name FROM method WHERE id = %s", (method_id,))
+            methods_name = cursor.fetchone()
+
+            if food_id not in methods_food:
+                methods_food[food_id] = []
+
+            methods_food[food_id].append(methods_name)
+
+        return render_template("manager_meals.html", choice_meal=choice_meal, groups_subgroups=groups_subgroups, foods=foods, methods_food=methods_food ,saved=saved,error=error)
+
+@app.route("/salvar_planejamento", methods=["GET", "POST"])
+def salvar_planejamento():
+    user_id = session.get("user_id")
+    cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
+    user_profile_id =cursor.fetchone()[0]
+
+    select_foods = {}
+    choice_list = {}
+    temp_pair = {}
+    for key, value in request.form.items():
+        category = key.split("_")[0]
+        if category == 'sub':
+            continue
+        elif category == "choice":
+            choice_list[category]=value
+            continue
+        elif category not in temp_pair:
+            temp_pair[category]=[]
+            
+        temp_pair[category].append(value)
+
+        if len(temp_pair[category]) == 2:
+            food_id = temp_pair[category][0]
+            method_id = temp_pair[category][1]
+            cursor.execute("SELECT id FROM food_method WHERE food_id = %s and method_id = %s", (food_id, method_id,))
+            row = cursor.fetchone()
+
+            if not row:
+                continue
+
+            row_id = row[0]
+
+            if category not in select_foods:
+                    select_foods[category] = []
+            
+            select_foods[category].append(row_id)
+            temp_pair = {}
+    number = 0
+    
+    choice = choice_list["choice"]
+
+    # -------- CRIA SIGNATURE --------
+    all_foods = []
+
+    for foods in select_foods.values():
+        all_foods.extend(foods)
+
+    all_foods = [f for f in all_foods if f != 0]
+
+    all_foods.sort()
+
+    meal_signature = "|".join(map(str, all_foods))
+
+    print("meal_signature", meal_signature)
+    # ------ insert id_profile ---------
+    try:
+        cursor.execute("INSERT INTO history_meal (user_profile_id, choice,meal_signature) VALUES (%s, %s, %s)", (user_profile_id,choice,meal_signature))
+        conn.commit()
+        history_meal_id = cursor.lastrowid
+    except IntegrityError:
+        return redirect(url_for(
+                "manager_meals",
+                error="duplicate"
+                ))
+    for key, value in select_foods.items():
+        if key == 'choice':
+            continue
+        else:
+            for food_id in value:
+                number += 1
+                food_number = "food" + "_"+ str(number)
+
+                query = f""" UPDATE history_meal SET {food_number} = %s WHERE id = %s"""
+
+                cursor.execute(query, (food_id, history_meal_id))
+        conn.commit()
+    
+    return redirect(url_for("manager_meals",saved=1))
+
+@app.route("/planner_meals", methods=["GET", "POST"])
+def planner_meals():
+    user_id = session.get("user_id")
+    cursor = conn.cursor(dictionary=True)
+    saved = request.args.get("saved") == "1"
+
+    cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
+    user_profile_id =cursor.fetchone()["id"]
+
+    #-------------- SELECT THE USER'S MEALS CHOICES ------------
+    cursor.execute("SELECT meal.id, meal.meal_name " \
+        "FROM user_profile_meal " \
+        "INNER JOIN meal ON user_profile_meal.meal_id = meal.id "
+        "WHERE user_profile_meal.profile_id = %s", (user_profile_id,))
+
+    choice_meal = cursor.fetchall()     
+
+    for meals in choice_meal:
+        meals["meal_pt"] = meal_translations.get(meals["meal_name"],meals["meal_name"])
+
+    
+    # ---------- SELECT LINE OF THE USER ------------
+
+    cursor.execute("""
+        SELECT * FROM history_meal
+        WHERE user_profile_id = %s """, (user_profile_id,))
+    meal_history = cursor.fetchall()
+    
+
+    # ------------ DATABASE MANIPULATION ----------
+    organize_meals = {}
+    list_grocery = {}
+    for row in meal_history:
+        history_meal_id = row['id']
+        choice_id = row['choice']
+
+        #-------- if choice not yet in dictionary --------
+        if choice_id not in organize_meals:
+            organize_meals[choice_id]= []
+        
+
+        #------------ CREATE GROCERY LIST ----------
+        grocery_list=[]
+        
+        for grocery, value in row.items():
+            #print(f"grocery {grocery}; value {value}\n")
+            #print(f"row.itens {row} \n")
+            if grocery.startswith("food_") and value not in (None, 0):
+                #--- TRANSLATE GROCERRY LIST FROM DATA TO WORDS -----
+                cursor.execute("SELECT food_id, method_id FROM food_method WHERE id = %s", (value,))
+                key = cursor.fetchone()
+                key_food = key["food_id"]
+                method_id = key["method_id"]
+                cursor.execute("SELECT name FROM food WHERE id = %s",(key_food,))
+                food_name = cursor.fetchone()["name"]
+                cursor.execute("SELECT name FROM method WHERE id = %s", (method_id,))
+                method_name = cursor.fetchone()["name"]
+                grocery = food_name + " " + method_name
+                grocery_list.append({    
+                    "food_method_id": value,
+                    "name": grocery})
+                
+                #------- PRINTS ----------
+                #print("KEY", key)
+                #print("key_food", key_food)
+                #print("method_id", method_id)
+                #print("food_name", food_name)
+                #print("Kmethod_nameEY", method_name)
+                #print("grocery", grocery)
+
+                list_grocery[value] = food_name
+        organize_meals[choice_id].append({ 
+            "history_meal_id":history_meal_id,
+            "foods":grocery_list
+        })
+    print("LIST_GROCERY", list_grocery)
+    session["organize_meals"] = organize_meals
+    session["list_grocery"] = list_grocery
+    if request.method == "POST":
+        selected_meals = request.form.getlist("selected_meals")
+        action = request.form.get("action")
+        session["selected_meals"] = selected_meals
+
+        if action == "delete":
+            placeholder = ",".join(["%s"] * len(selected_meals))
+            query = f"""
+                DELETE FROM history_meal WHERE id IN ({placeholder})
+                AND user_profile_id = %s
+            """
+            value = selected_meals + [user_profile_id]
+            cursor.execute(query,value)
+            conn.commit()
+
+            return redirect(url_for("planner_meals"))
+        else:
+            return redirect(url_for("temporary_choices"))
+        
+    return render_template("planner_meals.html", user_profile_id=user_profile_id, choice_meal=choice_meal, organize_meals=organize_meals)
+
+def teste_contas(user_profile_id, foods_choice):
+    print(f"\n foods_choice {foods_choice} \n")
+    cursor = conn.cursor(dictionary=True)
+    #----------- VALUES NECESSARIE FROM USER PROFILE  ------------------
+    cursor.execute("SELECT * FROM user_profile "\
+        "WHERE id = %s ", (user_profile_id,))
+    profile_row = cursor.fetchone()
+
+    #------------------- AGE CALCULATION ---------------
+    hoje = date.today()
+
+    birth = profile_row["birthday"]
+    if isinstance(birth, str):
+        birth = datetime.strptime(birth, "%Y-%m-%d").date()
+
+    age = hoje.year - birth.year - ((hoje.month, hoje.day) < (birth.month, birth.day))
+
+    # --------- EXERCISE ACTIVY FACTOR --------
+    exercise_id = profile_row["exercise_id"]
+    cursor.execute(" SELECT activy_factor FROM exercise " \
+    "WHERE id = %s", (exercise_id,))
+    activy_exercise = cursor.fetchone()["activy_factor"]
+    # ------------ GOAL_SPEED -------------
+    goal_id = profile_row["goal_id"]
+    goal_pace_id = profile_row["goal_pace_id"]
+    cursor.execute(" SELECT reference_value FROM goal_speed " \
+    "WHERE goal_id = %s AND goal_pace_id = %s", (goal_id, goal_pace_id))
+    goal_value = cursor.fetchone()["reference_value"]    
+    
+    # ------------ GOAL_PROTEIN --------------
+    cursor.execute(" SELECT goal_protein FROM protein " \
+    "WHERE goal_id = %s AND exercise_id = %s", (goal_id, exercise_id))
+    goal_protein = cursor.fetchone()["goal_protein"]
+
+    #------------- MEALS PERCENTUAL --------------
+    cursor.execute(" SELECT user_profile_meal.meal_id , meal.percentual FROM user_profile_meal JOIN meal ON meal.id = user_profile_meal.meal_id " \
+    "WHERE user_profile_meal.profile_id = %s ", (user_profile_id,))
+    meals = cursor.fetchall()
+
+    # ------------- DATAS FROM HISTORY_MEAL ----------
+    
+    macro = {}
+    basics = {}
+    for food, value in foods_choice.items():
+        if food == "choice_meal":
+            continue
+        #print("FOOD_CHOICE", foods_choice)
+        #print("FOOD", food)
+        cursor.execute(""" SELECT * FROM history_meal WHERE id = %s """, (food,))
+        row = cursor.fetchone()
+        #print("ROW", row)
+        history_meal_id = row["id"]
+        choice = row["choice"]
+        details_foods = []
+        if choice not in basics:
+            basics[choice]= {}
+        basics[choice][food] = value
+        
+        number = 1
+        for key, foods in row.items():
+            name = "food_" + str(number)
+            if name == key and foods != None:
+                number += 1
+                #---------- JOIN FOOD_METHOD AND SUBGROUP AND GROUP --------------
+                cursor.execute("SELECT food_method.*, subgroup.group_name_id, subgroup.ideal_min, subgroup.ideal_max, group_name.name  " \
+                "FROM food_method " \
+                "INNER JOIN food ON food_method.food_id = food.id " \
+                "INNER JOIN subgroup ON food.subgroup_id = subgroup.id " \
+                "INNER JOIN group_name ON subgroup.group_name_id = group_name.id " \
+                "WHERE food_method.id = %s", (foods,))
+                join_table = cursor.fetchone()
+                details_foods.append(join_table)
+
+            macro[history_meal_id] = details_foods
+        #print("macro", macro)
+
+    # ---------- PERCENTUAL PER GROUP_NAME --------
+    cursor.execute("SELECT id, percentual FROM group_name")
+    percentual_group = cursor.fetchall()
+    #print("PERCENTUAL", percentual_group)
+    #print("\n macro", macro)
+    # --------- CALCULATION IN CALCULOS.PY ----------
+    return_tmb_tdee = calculos.TMB_TDEE(profile_row["weight"], profile_row["height"], age, activy_exercise, profile_row["gender"])
+    return_goal = calculos.goal(return_tmb_tdee, goal_value)
+    return_protein_daily = calculos.protein_daily(goal_protein, profile_row["weight"])
+    return_meal_nutrients = calculos.meal_nutrients(return_goal, return_protein_daily, meals)
+    #print("return_meal_nutrients", return_meal_nutrients)
+    return_teste, return_list_grocery = calculos.teste(basics, macro, return_meal_nutrients, percentual_group)
+    session["show_meal"] = return_teste
+    session["grocery_list"] = return_list_grocery
+    print("\return_teste", return_teste)
+    print("\return_list_grocery", return_list_grocery)
+    session["basics"] = basics
+    #return_distribuition = calculos.distribuition(return_meal_nutrients, percentual_group,macro,return_teste)
+
+@app.route("/temporary_choices", methods=["GET", "POST"])
+def temporary_choices():
+    user_id = session.get("user_id")
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
+    user_profile_id =cursor.fetchone()["id"]
+
+    #----------- SESSIONS ------------
+    selected_meals = (session.get("selected_meals", []))
+    organize_meals = session.get("organize_meals")
+    #-------------- SELECT THE USER'S MEALS CHOICES ------------
+    ordered = {}
+    organize = {} 
+    
+    for choice_id, conjunto in organize_meals.items():
+        print(f"choice_id {choice_id}, conjunto {conjunto}")
+        for meal in conjunto:
+            print(f"meal {meal}")
+            if str(meal["history_meal_id"]) in selected_meals:
+                history_id = meal["history_meal_id"]
+                if choice_id not in organize:
+                    organize[choice_id] = {}
+                organize[choice_id][history_id] = meal
+    ordered = {
+        choice_id: meal_map.get(int(choice_id), int(choice_id))
+        for choice_id in organize.keys()
+    }
+    session["ordered"] = ordered
+    #print("ordered", ordered)
+    session["organize"] = organize
+    #print("organize", organize)
+    if request.method == "POST":
+        foods_choice = request.form
+        teste_contas(user_profile_id, foods_choice)
+        return redirect(url_for("show_meals", user_id=user_id))
+    
+    
+
+    return render_template("temporary_choices.html", ordered=ordered, organize=organize)
+
+@app.route("/show_meals", methods=["GET", "POST"])
+def show_meals():
+    user_id = session.get("user_id")
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT id,name FROM user_profile WHERE user_id = %s", (user_id,))
+    row = cursor.fetchone()
+    #print(f"row {row}")
+    user_profile_id =row["id"]
+    name = row["name"]
+    ordered = session.get("ordered")
+    #print("\nordered", ordered)
+    basics = session.get("basics")
+    #print("\nbasics", basics)
+    organize = session.get("organize")
+    #print("\norganize", organize)
+    show_meal = session.get("show_meal")
+    #print("\nshow_meal sessio get ", show_meal)
+    prep_lis  = session.get("grocery_list")
+    print("\n prep_lis ", prep_lis )
+
+    grocery_prep = {}
+    meals_view = []
+    for choice_id, meal_name in ordered.items():
+        for history_meal_id, quantity in basics.get(choice_id,{}).items():
+            foods  = organize.get(choice_id,{}).get(history_meal_id,{}).get("foods",[])
+
+            calculated = show_meal.get(history_meal_id,{})
+            item = []
+            item_grocery = []
+            total_kcal = 0
+
+            for food, items in zip(foods, calculated):
+                #print(f"food {food}")
+                kcal = items.get("kcal_item", 0)
+                total_kcal += kcal
+                food_method_id = str(food["food_method_id"])
+                #print(f"food_method_id {food_method_id}")
+                item.append({
+                    "food_name": food.get("name"),
+                    "grama_pronto": items.get("grama_pronto", 0),
+                    "kcal_item": kcal
+                })
+                
+                if food_method_id in prep_lis :
+                    
+                    name = food.get("name")
+                    value = prep_lis .get(food_method_id)
+                    #print(f"name {name}")
+                    #print(f"value {value}")
+                    grocery_prep[name] = value
+                    #print(f"\ngrocery_list.append: {grocery_list}")
+
+            meals_view.append({
+                "meal_name": meal_name,
+                "quantity": quantity,
+                "item": item,
+                "total_kcal": total_kcal
+            })
+    session["grocery_prep"] = grocery_prep
+    #print(" \n meals_view", meals_view)
+    payload = json.dumps(meals_view, ensure_ascii=False)
+    cursor.execute("""
+        UPDATE last_meal_build
+        SET meals_view = %s, updated_at = NOW()
+        WHERE user_profile_id = %s """,(payload,user_profile_id))
+    if cursor.rowcount == 0:
+        cursor.execute(""" 
+            INSERT INTO last_meal_build(user_profile_id, meals_view) 
+            VALUES (%s,%s) """, (user_profile_id,payload))
+        
+    conn.commit()
+    print(f"MEALS_VIEW: {meals_view}")
+    return render_template("show_meals.html", meals_view=meals_view, name=name)
+
+@app.route("/grocery_list", methods=["GET", "POST"])
+def grocery_list():
+    user_id = session.get("user_id")
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT id,name FROM user_profile WHERE user_id = %s", (user_id,))
+    row = cursor.fetchone()
+    print(f"row {row}")
+    user_profile_id =row["id"]
+    name = row["name"]
+    organize = session.get("organize")
+    print("\norganize", organize)
+    show_meal = session.get("show_meal")
+    prep_lis  = session.get("grocery_list") # from function teste contas
+    print("\n prep_lis ", prep_lis )
+    list_grocery  = session.get("list_grocery") #from function planner_meals
+    print("\n list_grocery ", list_grocery )
+    grocery_prep = session.get("grocery_prep")
+    print("\n grocery_prep ", grocery_prep )
+
+    prep_view = []
+    grocery_view = []
+    dict_grocery = {}
+    dict_prep = {}
+    for food_id, grams in prep_lis.items():
+        food_id = str(food_id)
+        if food_id in list_grocery:
+            name = list_grocery[food_id]
+            
+            dict_grocery[name] = dict_grocery.get(name, 0) + grams
+            
+    
+    print(" \n dict_grocery", dict_grocery)
+
+    general ={
+        "Lista de Compras": dict_grocery,
+        "Lista de Preparo": grocery_prep
+    }
+    print(" \n general", general,"\n")
+    payload = json.dumps(general, ensure_ascii=False)
+    cursor.execute("""
+        UPDATE last_grocery_list
+        SET grocery_view = %s, updated_at = NOW()
+        WHERE user_profile_id = %s """,(payload,user_profile_id))
+    if cursor.rowcount == 0:
+        cursor.execute(""" 
+            INSERT INTO last_grocery_list(user_profile_id, grocery_view) 
+            VALUES (%s,%s) """, (user_profile_id,payload))
+        
+    conn.commit()
+    
+    #print(f"MEALS_VIEW: {meals_view}")
+    return render_template("grocery_list.html", name=name, general=general)
 
 
-    """return render_template(
-        "planner.html",
-        meals=meals,
-        saved=saved,
-    )
-"""
 if __name__ == "__main__":
     app.run(debug=True)
-    PORT = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=PORT)
-

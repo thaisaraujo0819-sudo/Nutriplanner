@@ -1,0 +1,147 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: radial-gradient(circle at top left, rgba(218, 112, 63, 0.493), transparent 45%), radial-gradient(circle at bottom right, rgba(26, 67, 129, 0.699), transparent 30%), linear-gradient(135deg, rgba(194, 165, 111, 0.8784313725) 0%, rgba(159, 182, 97, 0.8549019608) 45%, rgba(70, 164, 180, 0.7607843137) 100%);
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+header {
+  width: 100%;
+  padding: 30px 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0);
+  backdrop-filter: blur(8px);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+}
+
+.title {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.title h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 3.2rem);
+}
+
+.floating-left,
+.floating-right {
+  position: fixed;
+  top: 20px;
+  z-index: 1000;
+}
+
+.floating-left {
+  position: fixed;
+  top: -50px;
+  left: -80px;
+}
+
+.floating-right {
+  position: fixed;
+  top: -50px;
+  right: -80px;
+}
+
+.floating-img {
+  width: 400px;
+  height: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.floating-img:hover {
+  transform: scale(1.1);
+}
+
+/*--------- GRID DOS CARDS ---------- */
+.meals-grid {
+  width: min(1400px, 100% - 32px);
+  margin: 24px auto;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 280px));
+  justify-content: center;
+}
+.meals-grid > * {
+  min-width: 0;
+}
+
+/* ---------- CARD ---------- */
+.meal-card {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  padding: 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+.meal-card h2 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+}
+
+/* ---------- TABELA ---------- */
+.meal-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.meal-table th,
+.meal-table td {
+  text-align: left;
+  min-width: 0;
+  padding: 4px 2px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  vertical-align: top;
+}
+.meal-table th:nth-child(1),
+.meal-table td:nth-child(1) {
+  width: 58%;
+}
+.meal-table th:nth-child(2),
+.meal-table td:nth-child(2) {
+  width: 22%;
+}
+.meal-table th:nth-child(3),
+.meal-table td:nth-child(3) {
+  width: 20%;
+}
+
+/* ---------- FOOTER ---------- */
+.meal-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 0.78rem;
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .header-content {
+    flex-direction: column;
+    justify-content: center;
+  }
+  .title {
+    order: -1;
+  }
+}/*# sourceMappingURL=show_meals.css.map */

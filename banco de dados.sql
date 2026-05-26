@@ -109,9 +109,74 @@ create table food_Method(
     unique key unique_food_method(food_id, method_id)
 );
 
+create table history_meal(
+	id int not null auto_increment,
+    user_profile_id int not null,
+    choice int not null,
+    
+    food_1 int null,
+    food_2 int null,
+    
+    food_3 int null,
+    food_4 int null,
+    
+    food_5 int null,
+	food_6 int null,
 
-select * from user_profile;
+	food_7 int null,
+	food_8 int null,
+
+	food_9 int null,
+	food_10 int null,
+
+	food_11 int null,
+	food_12 int null,
+
+	food_13 int null,
+	food_14 int null,
+
+	food_15 int null,
+	food_16 int null,
+
+	food_17 int null,
+	food_18 int null,
+    
+    primary key(id),
+    foreign key (user_profile_id) references user_profile(id)
+);
+
+create table goal_speed(
+	id int not null auto_increment,
+    goal_id int not null,
+    goal_pace_id int not null,
+    reference_value int not null,
+    primary key (id),
+    foreign key (goal_id) references goal(id),
+    foreign key (goal_pace_id) references goal_pace(id)
+);
+
+create table protein(
+	id int not null auto_increment,
+    goal_id int not null,
+    exercise_id int not null,
+    goal_protein int not null,
+    primary key (id),
+    foreign key (goal_id) references goal(id),
+    foreign key (exercise_id) references exercise(id)
+);
+
+CREATE TABLE last_meal_build (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_profile_id INT NOT NULL,
+    meals_view JSON NOT NULL,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
+select * from last_meal_build;
 select * from user_login;
+select * from user_profile;
+select * from exercise;
 select * from goal;
 select * from goal_pace;
 select * from meal;
@@ -120,9 +185,45 @@ select * from group_name;
 select * from subgroup;
 select * from food;
 select * from food_method;
+select * from history_meal;
 select * from method;
+select * from goal_speed;
+select * from protein;
 
--- alter table user_profile_meal drop column id;
+
+
+SHOW CREATE TABLE history_meal;
+truncate table protein;
+ALTER TABLE group_name add column percentual float; 
+update group_name set percentual = 0.0 where id = 1;
+update group_name set percentual = 1.0 where id = 2;
+update group_name set percentual = 0.5 where id = 3;
+update group_name set percentual = 0.0 where id = 4;
+update group_name set percentual = 0.4 where id = 5;
+update group_name set percentual = 0.5 where id = 6;
+update group_name set percentual = 0.3 where id = 7;
+update group_name set percentual = 0.4 where id = 8;
+update group_name set percentual = 0.7 where id = 9;
+
+ALTER TABLE history_meal
+ADD COLUMN meal_signature VARCHAR(255) NOT NULL;
+
+SET SQL_SAFE_UPDATES = 0;
+TRUNCATE TABLE history_meal;
+SET SQL_SAFE_UPDATES = 1;
+
+
+ALTER TABLE history_meal
+ADD CONSTRAINT unique_history_meal
+UNIQUE (user_profile_id, choice, meal_signature);
+
+ALTER TABLE history_meal RENAME COLUMN protein_2 TO food_2;   
 -- FOREIGN KEY (exercise_id) REFERENCES exercise(id);
--- alter table user_profile modify column birthday int not null;
 -- DESCRIBE user_profile;
+
+insert into meal (goal_id, exercise_id, goal_protein) values (1,1,1.2);
+insert into meal (goal_id, exercise_id, goal_protein) values (2,1,1.2);
+insert into meal (goal_id, exercise_id, goal_protein) values (3,1,0.8);
+insert into meal (goal_id, exercise_id, goal_protein) values (1,2,1.4);
+insert into meal (goal_id, exercise_id, goal_protein) values (2,2,1.4);
+insert into meal (goal_id, exercise_id, goal_protein) values (3,2,1.0);

@@ -1,0 +1,134 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: radial-gradient(circle at top left, rgba(218, 112, 63, 0.493), transparent 45%), radial-gradient(circle at bottom right, rgba(26, 67, 129, 0.699), transparent 30%), linear-gradient(135deg, rgba(194, 165, 111, 0.8784313725) 0%, rgba(159, 182, 97, 0.8549019608) 45%, rgba(70, 164, 180, 0.7607843137) 100%);
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+header {
+  width: 100%;
+  padding: 30px 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0);
+  backdrop-filter: blur(8px);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+}
+
+.title {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.title h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 3.2rem);
+}
+
+.shopping-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: wheat;
+}
+
+.shopping-item {
+  display: grid;
+  grid-template-columns: 40px 1fr 120px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 10px;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+  font-size: 16px;
+}
+
+.check-item {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.food-name {
+  font-weight: 600;
+}
+
+.food-grams {
+  text-align: right;
+  font-weight: bold;
+  color: #333;
+}
+
+.floating-left,
+.floating-right {
+  position: fixed;
+  top: -50px;
+  z-index: 1000;
+}
+
+.floating-left {
+  left: -80px;
+}
+
+.floating-right {
+  right: -80px;
+}
+
+.floating-img {
+  width: 400px;
+  height: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.floating-img:hover {
+  transform: scale(1.1);
+}
+
+#list-container {
+  width: min(700px, 95%);
+  margin: 90px auto 40px auto;
+}
+
+.bottom {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 40px;
+  width: 30%;
+  height: 50px;
+  border-radius: 12px;
+  border: 2px solid #5a3425;
+  background: rgba(207, 192, 192, 0.753);
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.bottom:hover {
+  background-color: rgba(107, 97, 97, 0.678);
+}
+
+@media (max-width: 600px) {
+  .header-content {
+    flex-direction: column;
+    justify-content: center;
+  }
+  .title {
+    order: -1;
+  }
+}/*# sourceMappingURL=grocery_list.css.map */
