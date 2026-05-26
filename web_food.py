@@ -31,9 +31,7 @@ def index():
 
 @app.route("/nutriplanner")
 def nutriplanner():
-    cursor.execute("SELECT * FROM foods")
-    data = cursor.fetchall()
-    return str(data)
+    return  render_template("nutriplanner.html")
     
 
 app.config["SECRET_KEY"] = "nutriplanner"
