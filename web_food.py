@@ -20,9 +20,12 @@ def get_connection():
         database = os.getenv("DB_NAME", "railway"),
         port = int(os.getenv("DB_PORT", 16836))
     )
+    return conn
 
-cursor = conn.cursor()
-conn = get_connection()
+def get_cursor():
+    conn = get_connection()
+    return conn, conn.cursor()
+    
 cursor = conn.cursor(dictionary=True)
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "nutriplanner"
@@ -60,7 +63,10 @@ def index():
 
 @app.route("/nutriplanner",methods=["GET", "POST"])
 def nutriplanner():
-    return render_template("nutriplanner.html")
+    cursor.execute("SELECT * FROM foods")
+    data = cursor.fetchall()
+
+    return str(data)
 # ----------------- LOGIN -----------------------
 @app.route("/login", methods=["GET","POST"])
 def login():
