@@ -791,6 +791,23 @@ def show_meals():
     prep_lis  = session.get("grocery_list")
     print("\n prep_lis ", prep_lis )
 
+
+    if ordered is None:
+        cursor.execute("""
+            SELECT meals_view
+            FROM last_meal_build
+            WHERE user_profile_id = %s
+            ORDER BY updated_at DESC
+            LIMIT 1
+        """, (user_profile_id,))
+
+        row = cursor.fetchone()
+
+        if row and row["meals_view"]:
+                prep_list = json.loads(row["meals_view"])
+        else:
+            return redirect("/planner_meals")
+        
     grocery_prep = {}
     meals_view = []
     for choice_id, meal_name in ordered.items():
@@ -852,23 +869,34 @@ def grocery_list():
 
     cursor.execute("SELECT id,name FROM user_profile WHERE user_id = %s", (user_id,))
     row = cursor.fetchone()
-    print(f"row {row}")
     user_profile_id =row["id"]
     name = row["name"]
     organize = session.get("organize")
-    print("\norganize", organize)
     show_meal = session.get("show_meal")
     prep_lis  = session.get("grocery_list") # from function teste contas
-    print("\n prep_lis ", prep_lis )
     list_grocery  = session.get("list_grocery") #from function planner_meals
-    print("\n list_grocery ", list_grocery )
     grocery_prep = session.get("grocery_prep")
-    print("\n grocery_prep ", grocery_prep )
 
     prep_view = []
     grocery_view = []
     dict_grocery = {}
     dict_prep = {}
+
+    if prep_list is None:
+        cursor.execute("""
+            SELECT grocery_view
+            FROM last_grocery_list
+            WHERE user_profile_id = %s
+            ORDER BY updated_at DESC
+            LIMIT 1
+        """, (user_profile_id,))
+
+        row = cursor.fetchone()
+
+        if row and row["grocery_view"]:
+            prep_list = json.loads(row["grocery_view"])
+        else:
+            return redirect("/planner_meals")
     for food_id, grams in prep_lis.items():
         food_id = str(food_id)
         if food_id in list_grocery:
@@ -895,8 +923,7 @@ def grocery_list():
             VALUES (%s,%s) """, (user_profile_id,payload))
         
     conn.commit()
-    
-    #print(f"MEALS_VIEW: {meals_view}")
+
     return render_template("grocery_list.html", name=name, general=general)
 
 
