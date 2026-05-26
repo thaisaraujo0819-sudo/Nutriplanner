@@ -79,7 +79,8 @@ def login():
     if not row:
         return render_template("login.html", login_error=True)
 
-    user_id, pass_hash = row
+    user_id = row["id"]
+    pass_hash = row["pass_hash"]
     # ----------- if not check with the pass_hash -----------
     if not check_password_hash (pass_hash, password):
         return render_template("login.html", login_error = True)
@@ -125,12 +126,15 @@ def menu():
     user_id = session.get("user_id")
     print("user_id", user_id)
     cursor.execute("SELECT name FROM user_profile WHERE user_id = %s",(user_id,))
-    primary_name = cursor.fetchone()[0]
     row = cursor.fetchone()
+    
+    if not row:
+        return redirect(url_for("perfil"))
+
     primary_name = row["name"]
     name = primary_name.split()[0]
-    print("name", name)
     session["name"] = name
+    
     return render_template("menu.html", name=name)
 
 #------------- PERFIL ---------------
