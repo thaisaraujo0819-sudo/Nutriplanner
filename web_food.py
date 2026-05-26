@@ -22,7 +22,8 @@ def get_connection():
     )
 
 cursor = conn.cursor()
-
+conn = get_connection()
+cursor = conn.cursor(dictionary=True)
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "nutriplanner"
 app.secret_key = "senhasecreta"
