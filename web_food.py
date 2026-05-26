@@ -64,7 +64,7 @@ meal_map = {
     5: "Jantar"
 }
 
------------------------
+#-----------------------
 @app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == "GET":
