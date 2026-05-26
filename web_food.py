@@ -10,6 +10,7 @@ from datetime import date, datetime
 import json
 from mysql.connector import IntegrityError
 
+app = Flask(__name__)
 
 load_dotenv()
 def get_connection():
@@ -34,7 +35,7 @@ def nutriplanner():
     data = cursor.fetchall()
     return str(data)
     
-app = Flask(__name__)
+
 app.config["SECRET_KEY"] = "nutriplanner"
 app.secret_key = "senhasecreta"
 # Configuração do email
@@ -108,6 +109,7 @@ def register():
     pass_hash = generate_password_hash(password)
 
     cursor.execute("INSERT INTO user_login (email, pass_hash) VALUES (%s, %s)", (email, pass_hash))
+    conn.commit()
     user_login_id = cursor.lastrowid
 
     session["user_id"] = user_login_id
@@ -126,6 +128,8 @@ def menu():
     print("user_id", user_id)
     cursor.execute("SELECT name FROM user_profile WHERE user_id = %s",(user_id,))
     primary_name = cursor.fetchone()[0]
+    row = cursor.fetchone()
+    primary_name = row["name"]
     name = primary_name.split()[0]
     print("name", name)
     session["name"] = name
