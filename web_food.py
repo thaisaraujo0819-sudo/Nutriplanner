@@ -786,24 +786,24 @@ def show_meals():
     user_id = session.get("user_id")
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT id,name FROM user_profile WHERE user_id = %s", (user_id,))
+    cursor.execute("SELECT id, name FROM user_profile WHERE user_id = %s", (user_id,))
     row = cursor.fetchone()
-    #print(f"row {row}")
-    user_profile_id =row["id"]
+
+    if not row:
+        return redirect("/perfil")
+
+    user_profile_id = row["id"]
     name = row["name"]
+
     ordered = session.get("ordered")
-    #print("\nordered", ordered)
     basics = session.get("basics")
-    #print("\nbasics", basics)
     organize = session.get("organize")
-    #print("\norganize", organize)
     show_meal = session.get("show_meal")
-    #print("\nshow_meal sessio get ", show_meal)
-    prep_list  = session.get("grocery_list")
-    print("\n prep_lis ", prep_lis )
+    prep_list = session.get("grocery_list", {})
 
+    print("\nprep_list", prep_list)
 
-    if ordered is None:
+    if ordered is None or basics is None or organize is None or show_meal is None:
         cursor.execute("""
             SELECT meals_view
             FROM last_meal_build
@@ -822,35 +822,30 @@ def show_meals():
 
     grocery_prep = {}
     meals_view = []
-    for choice_id, meal_name in ordered.items():
-        for history_meal_id, quantity in basics.get(choice_id,{}).items():
-            foods  = organize.get(choice_id,{}).get(history_meal_id,{}).get("foods",[])
 
-            calculated = show_meal.get(history_meal_id,{})
+    for choice_id, meal_name in ordered.items():
+        for history_meal_id, quantity in basics.get(choice_id, {}).items():
+            foods = organize.get(choice_id, {}).get(history_meal_id, {}).get("foods", [])
+            calculated = show_meal.get(history_meal_id, [])
+
             item = []
-            item_grocery = []
             total_kcal = 0
 
             for food, items in zip(foods, calculated):
-                #print(f"food {food}")
                 kcal = items.get("kcal_item", 0)
                 total_kcal += kcal
                 food_method_id = str(food["food_method_id"])
-                #print(f"food_method_id {food_method_id}")
+
                 item.append({
                     "food_name": food.get("name"),
                     "grama_pronto": items.get("grama_pronto", 0),
                     "kcal_item": kcal
                 })
-                
-                if food_method_id in prep_lis :
-                    
-                    name = food.get("name")
-                    value = prep_lis .get(food_method_id)
-                    #print(f"name {name}")
-                    #print(f"value {value}")
-                    grocery_prep[name] = value
-                    #print(f"\ngrocery_list.append: {grocery_list}")
+
+                if food_method_id in prep_list:
+                    food_name = food.get("name")
+                    value = prep_list.get(food_method_id)
+                    grocery_prep[food_name] = value
 
             meals_view.append({
                 "meal_name": meal_name,
@@ -858,41 +853,45 @@ def show_meals():
                 "item": item,
                 "total_kcal": total_kcal
             })
+
     session["grocery_prep"] = grocery_prep
-    #print(" \n meals_view", meals_view)
+
     payload = json.dumps(meals_view, ensure_ascii=False)
     cursor.execute("""
         UPDATE last_meal_build
         SET meals_view = %s, updated_at = NOW()
-        WHERE user_profile_id = %s """,(payload,user_profile_id))
+        WHERE user_profile_id = %s
+    """, (payload, user_profile_id))
+
     if cursor.rowcount == 0:
-        cursor.execute(""" 
-            INSERT INTO last_meal_build(user_profile_id, meals_view) 
-            VALUES (%s,%s) """, (user_profile_id,payload))
-        
+        cursor.execute("""
+            INSERT INTO last_meal_build (user_profile_id, meals_view)
+            VALUES (%s, %s)
+        """, (user_profile_id, payload))
+
     conn.commit()
     print(f"MEALS_VIEW: {meals_view}")
+
     return render_template("show_meals.html", meals_view=meals_view, name=name)
+
 
 @app.route("/grocery_list", methods=["GET", "POST"])
 def grocery_list():
     user_id = session.get("user_id")
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT id,name FROM user_profile WHERE user_id = %s", (user_id,))
+    cursor.execute("SELECT id, name FROM user_profile WHERE user_id = %s", (user_id,))
     row = cursor.fetchone()
-    user_profile_id =row["id"]
-    name = row["name"]
-    organize = session.get("organize")
-    show_meal = session.get("show_meal")
-    prep_list  = session.get("grocery_list") # from function teste contas
-    list_grocery  = session.get("list_grocery") #from function planner_meals
-    grocery_prep = session.get("grocery_prep")
 
-    prep_view = []
-    grocery_view = []
-    
-    dict_prep = {}
+    if not row:
+        return redirect("/perfil")
+
+    user_profile_id = row["id"]
+    name = row["name"]
+
+    prep_list = session.get("grocery_list")
+    list_grocery = session.get("list_grocery", {})
+    grocery_prep = session.get("grocery_prep", {})
 
     if prep_list is None:
         cursor.execute("""
@@ -906,36 +905,41 @@ def grocery_list():
         row = cursor.fetchone()
 
         if row and row["grocery_view"]:
-            prep_list = json.loads(row["grocery_view"])
+            general = json.loads(row["grocery_view"])
+            return render_template("grocery_list.html", name=name, general=general)
         else:
             return redirect("/planner_meals")
-            
+
     dict_grocery = {}
-    for food_id, grams in prep_lis.items():
+
+    for food_id, grams in prep_list.items():
         food_id = str(food_id)
         if food_id in list_grocery:
-            name = list_grocery[food_id]
-            
-            dict_grocery[name] = dict_grocery.get(name, 0) + grams
-            
-    
-    print(" \n dict_grocery", dict_grocery)
+            food_name = list_grocery[food_id]
+            dict_grocery[food_name] = dict_grocery.get(food_name, 0) + grams
 
-    general ={
+    print("\ndict_grocery", dict_grocery)
+
+    general = {
         "Lista de Compras": dict_grocery,
         "Lista de Preparo": grocery_prep
     }
-    print(" \n general", general,"\n")
+
+    print("\ngeneral", general, "\n")
+
     payload = json.dumps(general, ensure_ascii=False)
     cursor.execute("""
         UPDATE last_grocery_list
         SET grocery_view = %s, updated_at = NOW()
-        WHERE user_profile_id = %s """,(payload,user_profile_id))
+        WHERE user_profile_id = %s
+    """, (payload, user_profile_id))
+
     if cursor.rowcount == 0:
-        cursor.execute(""" 
-            INSERT INTO last_grocery_list(user_profile_id, grocery_view) 
-            VALUES (%s,%s) """, (user_profile_id,payload))
-        
+        cursor.execute("""
+            INSERT INTO last_grocery_list (user_profile_id, grocery_view)
+            VALUES (%s, %s)
+        """, (user_profile_id, payload))
+
     conn.commit()
 
     return render_template("grocery_list.html", name=name, general=general)
