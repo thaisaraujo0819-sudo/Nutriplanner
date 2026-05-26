@@ -799,7 +799,7 @@ def show_meals():
     #print("\norganize", organize)
     show_meal = session.get("show_meal")
     #print("\nshow_meal sessio get ", show_meal)
-    prep_lis  = session.get("grocery_list")
+    prep_list  = session.get("grocery_list")
     print("\n prep_lis ", prep_lis )
 
 
@@ -815,10 +815,11 @@ def show_meals():
         row = cursor.fetchone()
 
         if row and row["meals_view"]:
-                prep_list = json.loads(row["meals_view"])
+            meals_view = json.loads(row["meals_view"])
+            return render_template("show_meals.html", meals_view=meals_view, name=name)
         else:
             return redirect("/planner_meals")
-        
+
     grocery_prep = {}
     meals_view = []
     for choice_id, meal_name in ordered.items():
@@ -884,13 +885,13 @@ def grocery_list():
     name = row["name"]
     organize = session.get("organize")
     show_meal = session.get("show_meal")
-    prep_lis  = session.get("grocery_list") # from function teste contas
+    prep_list  = session.get("grocery_list") # from function teste contas
     list_grocery  = session.get("list_grocery") #from function planner_meals
     grocery_prep = session.get("grocery_prep")
 
     prep_view = []
     grocery_view = []
-    dict_grocery = {}
+    
     dict_prep = {}
 
     if prep_list is None:
@@ -908,6 +909,8 @@ def grocery_list():
             prep_list = json.loads(row["grocery_view"])
         else:
             return redirect("/planner_meals")
+            
+    dict_grocery = {}
     for food_id, grams in prep_lis.items():
         food_id = str(food_id)
         if food_id in list_grocery:
