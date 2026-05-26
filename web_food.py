@@ -22,11 +22,18 @@ def get_connection():
     )
     return conn
 
-def get_cursor():
-    conn = get_connection()
-    return conn, conn.cursor()
-    
+conn = get_connection()
 cursor = conn.cursor(dictionary=True)
+@app.route("/")
+def index():
+    return redirect("/nutriplanner")
+
+@app.route("/nutriplanner")
+def nutriplanner():
+    cursor.execute("SELECT * FROM foods")
+    data = cursor.fetchall()
+    return str(data)
+    
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "nutriplanner"
 app.secret_key = "senhasecreta"
@@ -57,17 +64,7 @@ meal_map = {
     5: "Jantar"
 }
 
-@app.route("/")
-def index():
-    return redirect("/nutriplanner")
-
-@app.route("/nutriplanner",methods=["GET", "POST"])
-def nutriplanner():
-    cursor.execute("SELECT * FROM foods")
-    data = cursor.fetchall()
-
-    return str(data)
-# ----------------- LOGIN -----------------------
+-----------------------
 @app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == "GET":
