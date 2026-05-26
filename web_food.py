@@ -51,6 +51,11 @@ meal_map = {
     4: "Lanche da tarde",
     5: "Jantar"
 }
+
+@app.route("/")
+def index():
+    return redirect("/nutriplanner")
+
 @app.route("/nutriplanner",methods=["GET", "POST"])
 def nutriplanner():
     return render_template("nutriplanner.html")
