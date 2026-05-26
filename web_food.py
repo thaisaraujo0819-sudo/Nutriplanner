@@ -12,13 +12,14 @@ from mysql.connector import IntegrityError
 
 
 load_dotenv()
-conn = mysql.connector.connect(
-    host = os.getenv("DB_HOST", "zephyr.proxy.rlwy.net"),
-    user = os.getenv("DB_USER", "root"),
-    password = os.getenv("DB_PASSWORD"),
-    database = os.getenv("DB_NAME", "railway"),
-    port = int(os.getenv("DB_PORT", 16836))
-)
+def get_connection():
+    conn = mysql.connector.connect(
+        host = os.getenv("DB_HOST", "zephyr.proxy.rlwy.net"),
+        user = os.getenv("DB_USER", "root"),
+        password = os.getenv("DB_PASSWORD"),
+        database = os.getenv("DB_NAME", "railway"),
+        port = int(os.getenv("DB_PORT", 16836))
+    )
 
 cursor = conn.cursor()
 
