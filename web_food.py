@@ -170,11 +170,11 @@ def perfil():
         "FROM user_profile "\
         "WHERE user_id = %s ", (user_id,))
         profile_row = cursor.fetchone()
-        primary_name = profile_row["name"]
-        name = primary_name.split()[0].capitalize()
+        
                 
         if profile_row:
-
+            primary_name = profile_row["name"]
+            name = primary_name.split()[0].capitalize()
             cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
             user_profile_id = cursor.fetchone()
             user_profile_id = user_profile_id["id"]
