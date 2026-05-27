@@ -202,7 +202,7 @@ def perfil():
                 "meals" : meal_ids,
                 }
                 
-                return render_template(
+            return render_template(
                     "perfil.html",
                     gmail=gmail,
                     perfil=profile_information,
