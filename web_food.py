@@ -201,6 +201,14 @@ def perfil():
                 "legumes": profile_row['legumes'],
                 "meals" : meal_ids,
                 }
+                
+                return render_template(
+                    "perfil.html",
+                    gmail=gmail,
+                    perfil=profile_information,
+                    saved=saved,
+                    name=name
+                    )
         #----------- ELSE DON'T EXIST RETURN EMPTY ---------            
         else:
             profile_information = {
@@ -219,12 +227,11 @@ def perfil():
                 "meal" : "",
             }
 
-        return render_template(
+            return render_template(
             "perfil.html",
             gmail=gmail,
             perfil=profile_information,
-            saved=saved,
-            name=name
+            saved=saved
             )
     
     if request.method == "POST":
