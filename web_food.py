@@ -124,7 +124,7 @@ def register():
 
     session["user_id"] = user_login_id
     conn.commit()
-    return redirect(url_for("menu"))
+    return redirect(url_for("perfil"))
 
 # -------- FUNCTION OF STRING TO INT --------
 def to_int_or_none(value):
