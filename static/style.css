@@ -44,7 +44,7 @@ body {
   content: "";
   display: block;
   position: absolute;
-  background-image: linear-gradient(to bottom, rgb(30, 91, 79), rgba(14, 43, 37, 0.692)), url("./imagem/favorita.jpg");
+  background-image: linear-gradient(to bottom, rgb(30, 91, 79), rgba(14, 43, 37, 0.692)), url("./imagem/favorita.webp");
   left: 0;
   top: 0;
   width: 100%;
