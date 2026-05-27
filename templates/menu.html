@@ -23,8 +23,11 @@
         <header >
             <nav class="header-content">
             <div class=" card_perfil">
-                <img src="{{ url_for('static', filename='imagem/perfil.png') }}">
-                <button onclick="location.href='/perfil'" class="bottom_perfil text"> Perfil </button>
+                <img 
+                    src="{{ url_for('static', filename='imagem/perfil.png') }}"
+                    onclick="location.href='/perfil/'"
+                    style="cursor:pointer;"
+                    >
         </div>
             <div class="title">
                 <h1>BEM VINDOS {{ name }}</h1>
@@ -66,7 +69,7 @@
                 <button onclick="location.href='/grocery_list'"class="bottom text_long">Lista de Compras</button>
             </div>
 
-            <button id="bottom_logout" type="button" class="bottom text logout">Sair</button>
+            <button id="bottom_logout" type="button" onclick="location.href='/logout'" class="bottom text logout">Sair</button>
 
             <button id="bottom_grocery" type="button" onclick="location.href='/grocery_list'" class="bottom text grocery">Lista de Compras</button>
 
