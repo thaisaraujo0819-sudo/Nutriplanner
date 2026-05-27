@@ -19,7 +19,8 @@ def get_connection():
         user = os.getenv("DB_USER", "root"),
         password = os.getenv("DB_PASSWORD"),
         database = os.getenv("DB_NAME", "railway"),
-        port = int(os.getenv("DB_PORT", 16836))
+        port = int(os.getenv("DB_PORT", 16836)),
+        ssl_disabled=True
     )
     return conn
 
@@ -34,16 +35,6 @@ def nutriplanner():
     return  render_template("nutriplanner.html")
     
 
-app.config["SECRET_KEY"] = "nutriplanner"
-app.secret_key = "senhasecreta"
-# Configuração do email
-app.config["MAIL_SERVER"] = "smtp.gmail.com"
-app.config["MAIL_PORT"] = 587
-app.config["MAIL_USE_TLS"] = True
-app.config["MAIL_USE_SSL"] = False
-app.config["MAIL_USERNAME"] = "nutriplanner@gmail.com"
-app.config["MAIL_PASSWORD"] = "jsadnjheLSKDDAS"
-app.config["MAIL_DEFAULT_SENDER"] = "nutriplanner@gmail.com"
 
 mail = Mail(app)
 
@@ -66,6 +57,8 @@ meal_map = {
 #-----------------------
 @app.route("/login", methods=["GET","POST"])
 def login():
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
     if request.method == "GET":
         return render_template("login.html")
     
@@ -92,6 +85,9 @@ def login():
 #------------------ REGISTER -------------------
 @app.route("/register", methods=["GET","POST"])
 def register():
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
     if request.method == "GET":
         return render_template("register.html")
 
@@ -112,7 +108,7 @@ def register():
     user_login_id = cursor.lastrowid
 
     session["user_id"] = user_login_id
-
+    conn.commit()
     return redirect(url_for("menu"))
 
 # -------- FUNCTION OF STRING TO INT --------
@@ -123,8 +119,10 @@ def to_int_or_none(value):
 
 @app.route("/menu/",methods= ["GET", "POST"])
 def menu():
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
     user_id = session.get("user_id")
-    print("user_id", user_id)
+    
     cursor.execute("SELECT name FROM user_profile WHERE user_id = %s",(user_id,))
     row = cursor.fetchone()
     
@@ -140,11 +138,15 @@ def menu():
 #------------- PERFIL ---------------
 @app.route("/perfil/", methods= ["GET", "POST"])
 def perfil():
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
     user_id = session.get("user_id")
+
     saved = request.args.get("saved") == "1"
+
     cursor.execute("SELECT email FROM user_login WHERE id = %s",(user_id,))
     row = cursor.fetchone()
-    gmail = row[0] 
+    gmail = row["email"] 
 
     if request.method == "GET":
         #----------- IF PERFIL ALRED EXIST RETURN VALUES ------------------
@@ -152,36 +154,36 @@ def perfil():
         "exercise_id, principal_meal_id,eats_sweet_daily, vegetable, legumes "\
         "FROM user_profile "\
         "WHERE user_id = %s ", (user_id,))
-
         profile_row = cursor.fetchone()
-        primary_name = profile_row[0]
+        primary_name = profile_row["name"]
         name = primary_name.split()[0].capitalize()
-        print("name",name)
                 
         if profile_row:
 
             cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
-            user_profile_id = cursor.fetchone()[0]
+            user_profile_id = cursor.fetchone()
+            user_profile_id = user_profile_id["id"]
+            
 
             cursor.execute("SELECT meal_id FROM user_profile_meal WHERE profile_id = %s ", (user_profile_id,))
 
             meal_row = cursor.fetchall()
-            meal_ids= [str (row[0]) for row in meal_row]
             
+            meal_ids= [str (row["meal_id"]) for row in meal_row]
 
             profile_information = {
-                "name": profile_row[0],
-                "birthday": profile_row[1],
-                "height": profile_row[2],
-                "weight": profile_row[3],
-                "gender": profile_row[4],
-                "goal_id": profile_row[5],
-                "goal_pace_id": profile_row[6],
-                "exercise_id": profile_row[7],
-                "principal_meal_id": profile_row[8],
-                "eats_sweet_daily": profile_row[9],
-                "vegetable": profile_row[10],
-                "legumes": profile_row[11],
+                "name": profile_row['name'],
+                "birthday": profile_row['birthday'],
+                "height": profile_row['height'],
+                "weight": profile_row['weight'],
+                "gender": profile_row['gender'],
+                "goal_id": profile_row['goal_id'],
+                "goal_pace_id": profile_row['goal_pace_id'],
+                "exercise_id": profile_row['exercise_id'],
+                "principal_meal_id": profile_row['principal_meal_id'],
+                "eats_sweet_daily": profile_row['eats_sweet_daily'],
+                "vegetable": profile_row['vegetable'],
+                "legumes": profile_row['legumes'],
                 "meals" : meal_ids,
                 }
         #----------- ELSE DON'T EXIST RETURN EMPTY ---------            
@@ -243,8 +245,8 @@ def perfil():
             conn.commit()
 
             cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
-            user_profile_id = cursor.fetchone()[0]
-
+            user_profile_id = cursor.fetchone()
+            user_profile_id = user_profile_id["id"]
             for meal in meals:
                 cursor.execute("INSERT INTO user_profile_meal (profile_id, meal_id) VALUES (%s, %s)", 
                 (user_profile_id, meal))
@@ -274,7 +276,8 @@ def perfil():
             conn.commit()
 
             cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
-            user_profile_id = cursor.fetchone()[0]
+            user_profile_id = cursor.fetchone()
+            user_profile_id = user_profile_id["id"]
 
             cursor.execute("delete from user_profile_meal where profile_id = %s", (user_profile_id,))
 
@@ -288,10 +291,12 @@ def perfil():
 # ----------- CHANGE EMAIL ------------    
 @app.route("/change_login", methods=["GET", "POST"])
 def change_login():
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
     user_id = session.get("user_id")
 
     cursor.execute("SELECT email FROM user_login WHERE id = %s",(user_id,))
-    primary_email = cursor.fetchone()[0] 
+    primary_email = cursor.fetchone()["email"]
 
     if request.method == "GET":
         return render_template("change_login.html", email=primary_email)
@@ -303,7 +308,7 @@ def change_login():
     if request.method == "POST":
 
         cursor.execute("select pass_hash from user_login where id = %s", (user_id,))
-        pass_hash = cursor.fetchone()[0]
+        pass_hash = cursor.fetchone()['pass_hash']
 
         if old_email != primary_email:
             return redirect( url_for('change_login', email_error = True))
@@ -339,6 +344,8 @@ def send_email(email, token):
 
 @app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
     if request.method == "GET":
         return render_template("forgot_password.html")
     
@@ -393,9 +400,10 @@ def logout():
 # --------------- PLANNER FOOD --------
 @app.route("/manager_meals", methods=["GET"])
 def manager_meals():
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
     error = request.args.get("error")
     user_id = session.get("user_id")
-    cursor = conn.cursor(dictionary=True)
 
     cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
     user_profile_id =cursor.fetchone()["id"]
@@ -469,9 +477,13 @@ def manager_meals():
 
 @app.route("/salvar_planejamento", methods=["GET", "POST"])
 def salvar_planejamento():
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
     user_id = session.get("user_id")
+
+
     cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
-    user_profile_id =cursor.fetchone()[0]
+    user_profile_id =cursor.fetchone()['id']
 
     select_foods = {}
     choice_list = {}
@@ -497,7 +509,7 @@ def salvar_planejamento():
             if not row:
                 continue
 
-            row_id = row[0]
+            row_id = row['id']
 
             if category not in select_foods:
                     select_foods[category] = []
@@ -520,7 +532,6 @@ def salvar_planejamento():
 
     meal_signature = "|".join(map(str, all_foods))
 
-    print("meal_signature", meal_signature)
     # ------ insert id_profile ---------
     try:
         cursor.execute("INSERT INTO history_meal (user_profile_id, choice,meal_signature) VALUES (%s, %s, %s)", (user_profile_id,choice,meal_signature))
@@ -548,8 +559,10 @@ def salvar_planejamento():
 
 @app.route("/planner_meals", methods=["GET", "POST"])
 def planner_meals():
+    conn = get_connection()
     user_id = session.get("user_id")
     cursor = conn.cursor(dictionary=True)
+
     saved = request.args.get("saved") == "1"
 
     cursor.execute("SELECT id FROM user_profile WHERE user_id = %s", (user_id,))
@@ -591,8 +604,6 @@ def planner_meals():
         grocery_list=[]
         
         for grocery, value in row.items():
-            #print(f"grocery {grocery}; value {value}\n")
-            #print(f"row.itens {row} \n")
             if grocery.startswith("food_") and value not in (None, 0):
                 #--- TRANSLATE GROCERRY LIST FROM DATA TO WORDS -----
                 cursor.execute("SELECT food_id, method_id FROM food_method WHERE id = %s", (value,))
@@ -608,20 +619,12 @@ def planner_meals():
                     "food_method_id": value,
                     "name": grocery})
                 
-                #------- PRINTS ----------
-                #print("KEY", key)
-                #print("key_food", key_food)
-                #print("method_id", method_id)
-                #print("food_name", food_name)
-                #print("Kmethod_nameEY", method_name)
-                #print("grocery", grocery)
 
                 list_grocery[value] = food_name
         organize_meals[choice_id].append({ 
             "history_meal_id":history_meal_id,
             "foods":grocery_list
         })
-    print("LIST_GROCERY", list_grocery)
     session["organize_meals"] = organize_meals
     session["list_grocery"] = list_grocery
     if request.method == "POST":
@@ -646,7 +649,7 @@ def planner_meals():
     return render_template("planner_meals.html", user_profile_id=user_profile_id, choice_meal=choice_meal, organize_meals=organize_meals)
 
 def teste_contas(user_profile_id, foods_choice):
-    print(f"\n foods_choice {foods_choice} \n")
+    conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     #----------- VALUES NECESSARIE FROM USER PROFILE  ------------------
     cursor.execute("SELECT * FROM user_profile "\
@@ -691,11 +694,8 @@ def teste_contas(user_profile_id, foods_choice):
     for food, value in foods_choice.items():
         if food == "choice_meal":
             continue
-        #print("FOOD_CHOICE", foods_choice)
-        #print("FOOD", food)
         cursor.execute(""" SELECT * FROM history_meal WHERE id = %s """, (food,))
         row = cursor.fetchone()
-        #print("ROW", row)
         history_meal_id = row["id"]
         choice = row["choice"]
         details_foods = []
@@ -719,29 +719,26 @@ def teste_contas(user_profile_id, foods_choice):
                 details_foods.append(join_table)
 
             macro[history_meal_id] = details_foods
-        #print("macro", macro)
 
     # ---------- PERCENTUAL PER GROUP_NAME --------
     cursor.execute("SELECT id, percentual FROM group_name")
     percentual_group = cursor.fetchall()
-    #print("PERCENTUAL", percentual_group)
-    #print("\n macro", macro)
+
     # --------- CALCULATION IN CALCULOS.PY ----------
     return_tmb_tdee = calculos.TMB_TDEE(profile_row["weight"], profile_row["height"], age, activy_exercise, profile_row["gender"])
     return_goal = calculos.goal(return_tmb_tdee, goal_value)
     return_protein_daily = calculos.protein_daily(goal_protein, profile_row["weight"])
     return_meal_nutrients = calculos.meal_nutrients(return_goal, return_protein_daily, meals)
-    #print("return_meal_nutrients", return_meal_nutrients)
     return_teste, return_list_grocery = calculos.teste(basics, macro, return_meal_nutrients, percentual_group)
     session["show_meal"] = return_teste
     session["grocery_list"] = return_list_grocery
     print("\return_teste", return_teste)
     print("\return_list_grocery", return_list_grocery)
     session["basics"] = basics
-    #return_distribuition = calculos.distribuition(return_meal_nutrients, percentual_group,macro,return_teste)
 
 @app.route("/temporary_choices", methods=["GET", "POST"])
 def temporary_choices():
+    conn = get_connection()
     user_id = session.get("user_id")
     cursor = conn.cursor(dictionary=True)
 
@@ -751,6 +748,7 @@ def temporary_choices():
     #----------- SESSIONS ------------
     selected_meals = (session.get("selected_meals", []))
     organize_meals = session.get("organize_meals")
+
     #-------------- SELECT THE USER'S MEALS CHOICES ------------
     ordered = {}
     organize = {} 
@@ -769,9 +767,7 @@ def temporary_choices():
         for choice_id in organize.keys()
     }
     session["ordered"] = ordered
-    #print("ordered", ordered)
     session["organize"] = organize
-    #print("organize", organize)
     if request.method == "POST":
         foods_choice = request.form
         teste_contas(user_profile_id, foods_choice)
@@ -783,6 +779,7 @@ def temporary_choices():
 
 @app.route("/show_meals", methods=["GET", "POST"])
 def show_meals():
+    conn = get_connection()
     user_id = session.get("user_id")
     cursor = conn.cursor(dictionary=True)
 
@@ -800,8 +797,6 @@ def show_meals():
     organize = session.get("organize")
     show_meal = session.get("show_meal")
     prep_list = session.get("grocery_list", {})
-
-    print("\nprep_list", prep_list)
 
     if ordered is None or basics is None or organize is None or show_meal is None:
         cursor.execute("""
@@ -870,7 +865,6 @@ def show_meals():
         """, (user_profile_id, payload))
 
     conn.commit()
-    print(f"MEALS_VIEW: {meals_view}")
 
     return render_template("show_meals.html", meals_view=meals_view, name=name)
 
@@ -918,14 +912,11 @@ def grocery_list():
             food_name = list_grocery[food_id]
             dict_grocery[food_name] = dict_grocery.get(food_name, 0) + grams
 
-    print("\ndict_grocery", dict_grocery)
-
     general = {
         "Lista de Compras": dict_grocery,
         "Lista de Preparo": grocery_prep
     }
 
-    print("\ngeneral", general, "\n")
 
     payload = json.dumps(general, ensure_ascii=False)
     cursor.execute("""
