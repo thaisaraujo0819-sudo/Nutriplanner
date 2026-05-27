@@ -48,6 +48,9 @@ app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_USERNAME")
 
 print("SECRET_KEY:", os.getenv("SECRET_KEY"))
 print("MAIL_USERNAME:", os.getenv("MAIL_USERNAME"))
+print("SECRET_KEY exists?", os.getenv("SECRET_KEY") is not None)
+print("MAIL_USERNAME exists?", os.getenv("MAIL_USERNAME") is not None)
+print("All env keys sample:", [k for k in os.environ.keys() if "MAIL" in k or "SECRET" in k or "DB" in k])
 
 mail = Mail(app)
 
