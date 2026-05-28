@@ -58,3 +58,9 @@ Menu do usuario:
 
 Desenvolvido por Thais Araujo Souza
 
+## ⚠️ Direitos Autorais e Cópia
+
+Este repositório é estritamente para fins de portfólio e demonstração de habilidades. 
+Todos os direitos são reservados. Não é permitida a cópia, distribuição, modificação 
+ou uso comercial deste código (total ou parcial) sem autorização prévia por escrito.
+
