@@ -893,6 +893,7 @@ def show_meals():
 
 @app.route("/grocery_list", methods=["GET", "POST"])
 def grocery_list():
+    conn = get_connection()
     user_id = session.get("user_id")
     cursor = conn.cursor(dictionary=True)
 
